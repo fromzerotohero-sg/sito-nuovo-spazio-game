@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Link } from 'react-router';
 import { MapPin, Ticket, ExternalLink } from 'lucide-react';
-import { tourScheduleConfig } from '../config';
+import { tourScheduleConfig, productRoutes } from '../config';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -129,9 +130,10 @@ const TourSchedule = () => {
               const status = getStatusLabel(tour.status);
 
               return (
-                <div
+                <Link
                   key={tour.id}
-                  className="tour-item group relative p-4 sm:p-6 rounded-xl bg-white/50 backdrop-blur-sm border border-[#1F1F1F]/10 hover:bg-white/80 transition-all duration-300 cursor-pointer"
+                  to={productRoutes.assistenza}
+                  className="tour-item group relative block p-4 sm:p-6 rounded-xl bg-white/50 backdrop-blur-sm border border-[#1F1F1F]/10 hover:bg-white/80 transition-all duration-300"
                   onMouseEnter={() => setActiveVenue(index)}
                   onMouseLeave={() => setActiveVenue(0)}
                 >
@@ -165,29 +167,30 @@ const TourSchedule = () => {
                     </div>
 
                     <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                      {tour.status === 'on-sale' ? (
-                        <button
-                          type="button"
-                          className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-[#1F1F1F] text-white rounded-full text-sm font-medium hover:bg-[#1F1F1F]/80 transition-colors"
-                        >
+                      <span
+                        className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium ${
+                          tour.status === 'on-sale'
+                            ? 'bg-[#1F1F1F] text-white'
+                            : 'border border-[#1F1F1F]/20 text-[#1F1F1F]/60'
+                        }`}
+                      >
+                        {tour.status === 'on-sale' ? (
                           <Ticket className="w-4 h-4" />
-                          <span>{tourScheduleConfig.buyButtonText}</span>
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 border border-[#1F1F1F]/20 text-[#1F1F1F]/60 rounded-full text-sm hover:border-[#1F1F1F]/40 transition-colors"
-                        >
+                        ) : (
                           <ExternalLink className="w-4 h-4" />
-                          <span>{tourScheduleConfig.detailsButtonText}</span>
-                        </button>
-                      )}
+                        )}
+                        <span>
+                          {tour.status === 'on-sale'
+                            ? tourScheduleConfig.buyButtonText
+                            : tourScheduleConfig.detailsButtonText}
+                        </span>
+                      </span>
                     </div>
                   </div>
 
                   {/* Hover indicator */}
                   <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 bg-[#1F1F1F] rounded-full group-hover:h-12 transition-all duration-300" />
-                </div>
+                </Link>
               );
             })}
           </div>
@@ -198,12 +201,12 @@ const TourSchedule = () => {
           <p className="font-mono-custom text-sm text-[#1F1F1F]/60 mb-4">
             {tourScheduleConfig.bottomNote}
           </p>
-          <button
-            type="button"
-            className="w-full sm:w-auto px-8 py-4 bg-[#1F1F1F] text-white font-display text-sm uppercase tracking-wider rounded-full hover:bg-[#1F1F1F]/80 transition-colors"
+          <Link
+            to={productRoutes.assistenza}
+            className="inline-flex w-full sm:w-auto justify-center px-8 py-4 bg-[#1F1F1F] text-white font-display text-sm uppercase tracking-wider rounded-full hover:bg-[#1F1F1F]/80 transition-colors"
           >
             {tourScheduleConfig.bottomCtaText}
-          </button>
+          </Link>
         </div>
       </div>
 

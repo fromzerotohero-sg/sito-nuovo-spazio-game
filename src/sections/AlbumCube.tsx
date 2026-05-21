@@ -1,9 +1,11 @@
 import { useRef, useEffect, useState, Suspense } from 'react';
+import { Link, useNavigate } from 'react-router';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useTexture, Environment } from '@react-three/drei';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import * as THREE from 'three';
+import { ArrowRight } from 'lucide-react';
 import { albumCubeConfig } from '../config';
 import { useIsMobile } from '../hooks/use-mobile';
 
@@ -11,10 +13,12 @@ gsap.registerPlugin(ScrollTrigger);
 
 interface CubeProps {
   rotationProgress: number;
+  href: string;
 }
 
-const Cube = ({ rotationProgress }: CubeProps) => {
+const Cube = ({ rotationProgress, href }: CubeProps) => {
   const meshRef = useRef<THREE.Mesh>(null);
+  const navigate = useNavigate();
   const { viewport } = useThree();
 
   const textures = useTexture(albumCubeConfig.cubeTextures);
@@ -39,7 +43,20 @@ const Cube = ({ rotationProgress }: CubeProps) => {
   });
 
   return (
-    <mesh ref={meshRef} castShadow>
+    <mesh
+      ref={meshRef}
+      castShadow
+      onClick={(e) => {
+        e.stopPropagation();
+        navigate(href);
+      }}
+      onPointerOver={() => {
+        document.body.style.cursor = 'pointer';
+      }}
+      onPointerOut={() => {
+        document.body.style.cursor = '';
+      }}
+    >
       <boxGeometry args={[cubeSize, cubeSize, cubeSize]} />
       {textures.map((texture, index) => (
         <meshStandardMaterial
@@ -128,7 +145,7 @@ const AlbumCube = () => {
         </h2>
       </div>
 
-      <div className="absolute inset-0 z-10">
+      <div className="absolute inset-0 z-10 pointer-events-auto">
         <Canvas
           camera={{ position: [0, 0, isMobile ? 7 : 6], fov: isMobile ? 50 : 45 }}
           gl={{ antialias: true, alpha: true }}
@@ -139,39 +156,52 @@ const AlbumCube = () => {
             <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} castShadow />
             <spotLight position={[-10, -10, -10]} angle={0.15} penumbra={1} intensity={0.5} color="#9DC4FF" />
             <pointLight position={[0, 0, 5]} intensity={0.5} color="#00D4FF" />
-            <Cube rotationProgress={rotationProgress} />
+            <Cube rotationProgress={rotationProgress} href={currentAlbum.href} />
             <Environment preset="city" />
           </Suspense>
         </Canvas>
       </div>
 
-      <div className="absolute bottom-4 left-4 right-4 sm:bottom-8 sm:left-8 sm:right-auto z-20 max-w-[calc(100vw-2rem)]">
+      <Link
+        to={currentAlbum.href}
+        className="absolute bottom-4 left-4 right-4 sm:bottom-8 sm:left-8 sm:right-auto z-20 max-w-[calc(100vw-2rem)] group block rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/60 p-3 -m-3 hover:bg-white/5 transition-colors"
+      >
         <p className="font-mono-custom text-[10px] sm:text-xs text-neon-soft/60 uppercase tracking-wider mb-1 sm:mb-2">
           {String(currentAlbum.id).padStart(2, '0')} / {String(albumCubeConfig.albums.length).padStart(2, '0')}
         </p>
-        <h3 className="font-display text-3xl sm:text-5xl md:text-7xl text-white mb-1 transition-all duration-300 leading-tight">
+        <h3 className="font-display text-3xl sm:text-5xl md:text-7xl text-white mb-1 transition-all duration-300 leading-tight group-hover:text-neon-soft">
           {currentAlbum.title}
         </h3>
-        <p className="font-mono-custom text-xs sm:text-sm text-white/50 line-clamp-2">
+        <p className="font-mono-custom text-xs sm:text-sm text-white/50 line-clamp-2 mb-2">
           {currentAlbum.subtitle}
         </p>
-      </div>
+        <span className="inline-flex items-center gap-2 text-xs font-mono-custom uppercase tracking-wider text-neon-cyan group-hover:gap-3 transition-all">
+          Scopri {currentAlbum.title}
+          <ArrowRight className="w-4 h-4" />
+        </span>
+      </Link>
 
       <div className="absolute bottom-4 right-4 sm:bottom-12 sm:right-12 z-20 flex sm:flex-col items-center sm:items-stretch gap-2 sm:gap-3">
         {albumCubeConfig.albums.map((album, index) => (
-          <div
+          <Link
             key={album.id}
+            to={album.href}
+            aria-label={`Vai a ${album.title}`}
             className={`rounded-full transition-all duration-300 ${
               index === currentAlbumIndex
                 ? 'bg-neon-cyan w-6 h-2 sm:w-2 sm:h-8'
-                : 'bg-white/20 w-2 h-2'
+                : 'bg-white/20 w-2 h-2 hover:bg-white/50'
             }`}
           />
         ))}
       </div>
 
-      <p className="hidden sm:block absolute bottom-12 right-12 z-20 font-mono-custom text-xs text-white/40 uppercase tracking-wider">
+      <p className="hidden sm:block absolute bottom-12 right-12 z-20 font-mono-custom text-xs text-white/40 uppercase tracking-wider text-right max-w-[140px]">
         {albumCubeConfig.scrollHint}
+        <span className="block mt-1 text-white/25">{albumCubeConfig.tapHint}</span>
+      </p>
+      <p className="sm:hidden absolute top-20 left-0 right-0 z-20 text-center font-mono-custom text-[10px] text-white/35 uppercase tracking-wider px-4 pointer-events-none">
+        {albumCubeConfig.tapHint}
       </p>
 
       <div className="hidden sm:block absolute top-12 left-12 w-20 h-px bg-gradient-to-r from-neon-cyan/50 to-transparent" />

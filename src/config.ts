@@ -17,9 +17,16 @@ export const siteConfig: SiteConfig = {
 };
 
 export const brandAssets = {
-  logo: "/logo-spaziogame.png",
-  logoTransparent: "/logo-spaziogame-transparent.png",
+  logo: "/logo-spaziogame-light.png",
   logoAlt: "Spazio Game — Let's Play It",
+} as const;
+
+export const productRoutes = {
+  games: "/games",
+  cabinet: "/cabinet",
+  monitor: "/monitor",
+  accessori: "/accessori",
+  assistenza: "/assistenza",
 } as const;
 
 // -- Hero Section -------------------------------------------------------------
@@ -58,10 +65,11 @@ export const heroConfig: HeroConfig = {
   cornerLabel: "ISO 9001",
   cornerDetail: "Certified",
   navItems: [
-    { label: "Games", sectionId: "features", icon: "disc", href: "/games" },
-    { label: "Giochi", sectionId: "gallery", icon: "play", href: "/games" },
-    { label: "Assistenza", sectionId: "pricing", icon: "calendar", href: "/assistenza" },
-    { label: "Contatti", sectionId: "contact", icon: "music" },
+    { label: "Games", sectionId: "albums", icon: "disc", href: productRoutes.games },
+    { label: "Cabinet", sectionId: "albums", icon: "play", href: productRoutes.cabinet },
+    { label: "Monitor", sectionId: "albums", icon: "calendar", href: productRoutes.monitor },
+    { label: "Accessori", sectionId: "albums", icon: "music", href: productRoutes.accessori },
+    { label: "Assistenza", sectionId: "tour", icon: "music", href: productRoutes.assistenza },
   ],
 };
 
@@ -71,12 +79,14 @@ export interface Album {
   title: string;
   subtitle: string;
   image: string;
+  href: string;
 }
 
 export interface AlbumCubeConfig {
   albums: Album[];
   cubeTextures: string[];
   scrollHint: string;
+  tapHint: string;
 }
 
 export const albumCubeConfig: AlbumCubeConfig = {
@@ -86,24 +96,28 @@ export const albumCubeConfig: AlbumCubeConfig = {
       title: "GAMES",
       subtitle: "SCHEDE DI GIOCO COMMA 6A",
       image: "/games-scheda.jpg",
+      href: productRoutes.games,
     },
     {
       id: 2,
       title: "CABINET",
       subtitle: "APPARECCHI E MOBILI",
       image: "/cabinet-earth.jpg",
+      href: productRoutes.cabinet,
     },
     {
       id: 3,
       title: "MONITOR",
       subtitle: "OPEN-FRAME 17/19/22",
       image: "/monitor-open.jpg",
+      href: productRoutes.monitor,
     },
     {
       id: 4,
       title: "ACCESSORI",
       subtitle: "DIVISORI E SGABELLI",
       image: "/accessori-divisori.jpg",
+      href: productRoutes.accessori,
     },
   ],
   cubeTextures: [
@@ -115,6 +129,7 @@ export const albumCubeConfig: AlbumCubeConfig = {
     "/hero-sede.jpg",
   ],
   scrollHint: "Scorri per esplorare",
+  tapHint: "Tocca il cubo per aprire la sezione",
 };
 
 // -- Parallax Gallery Section -------------------------------------------------
@@ -122,6 +137,7 @@ export interface ParallaxImage {
   id: number;
   src: string;
   alt: string;
+  href?: string;
 }
 
 export interface GalleryImage {
@@ -129,6 +145,7 @@ export interface GalleryImage {
   src: string;
   title: string;
   date: string;
+  href: string;
 }
 
 export interface ParallaxGalleryConfig {
@@ -159,28 +176,28 @@ export const parallaxGalleryConfig: ParallaxGalleryConfig = {
   ],
   endCtaText: "Scopri tutti i prodotti",
   parallaxImagesTop: [
-    { id: 1, src: "/games-scheda.jpg", alt: "Scheda di gioco" },
-    { id: 2, src: "/cabinet-earth.jpg", alt: "Cabinet" },
-    { id: 3, src: "/monitor-open.jpg", alt: "Monitor" },
-    { id: 4, src: "/accessori-divisori.jpg", alt: "Accessori" },
-    { id: 5, src: "/assistenza-tech.jpg", alt: "Assistenza" },
-    { id: 6, src: "/hero-sede.jpg", alt: "Sede" },
+    { id: 1, src: "/games-scheda.jpg", alt: "Scheda di gioco", href: productRoutes.games },
+    { id: 2, src: "/cabinet-earth.jpg", alt: "Cabinet", href: productRoutes.cabinet },
+    { id: 3, src: "/monitor-open.jpg", alt: "Monitor", href: productRoutes.monitor },
+    { id: 4, src: "/accessori-divisori.jpg", alt: "Accessori", href: productRoutes.accessori },
+    { id: 5, src: "/assistenza-tech.jpg", alt: "Assistenza", href: productRoutes.assistenza },
+    { id: 6, src: "/hero-sede.jpg", alt: "Sede", href: productRoutes.assistenza },
   ],
   parallaxImagesBottom: [
-    { id: 1, src: "/master5-game.jpg", alt: "Master 5" },
-    { id: 2, src: "/super7-game.jpg", alt: "Super 7" },
-    { id: 3, src: "/gallery-sala.jpg", alt: "Sala Giochi" },
-    { id: 4, src: "/games-scheda.jpg", alt: "Games" },
-    { id: 5, src: "/sgabelli.jpg", alt: "Sgabelli" },
-    { id: 6, src: "/separatore.jpg", alt: "Separatore" },
+    { id: 1, src: "/master5-game.jpg", alt: "Master 5", href: productRoutes.games },
+    { id: 2, src: "/super7-game.jpg", alt: "Super 7", href: productRoutes.games },
+    { id: 3, src: "/gallery-sala.jpg", alt: "Sala Giochi", href: productRoutes.games },
+    { id: 4, src: "/games-scheda.jpg", alt: "Games", href: productRoutes.games },
+    { id: 5, src: "/sgabelli.jpg", alt: "Sgabelli", href: productRoutes.accessori },
+    { id: 6, src: "/separatore.jpg", alt: "Separatore", href: productRoutes.accessori },
   ],
   galleryImages: [
-    { id: 1, src: "/master5-game.jpg", title: "Master 5", date: "PAYOUT 65% - ASTX-R1" },
-    { id: 2, src: "/super7-game.jpg", title: "Super 7", date: "PAYOUT 65% - G_640S" },
-    { id: 3, src: "/games-scheda.jpg", title: "Schede di Gioco", date: "COMMA 6A" },
-    { id: 4, src: "/cabinet-earth.jpg", title: "Cabinet Earth", date: "MOBILE" },
-    { id: 5, src: "/monitor-open.jpg", title: "Monitor Open-Frame", date: "17/19/22" },
-    { id: 6, src: "/accessori-divisori.jpg", title: "Accessori", date: "DIVISORI" },
+    { id: 1, src: "/master5-game.jpg", title: "Master 5", date: "PAYOUT 65% - ASTX-R1", href: productRoutes.games },
+    { id: 2, src: "/super7-game.jpg", title: "Super 7", date: "PAYOUT 65% - G_640S", href: productRoutes.games },
+    { id: 3, src: "/games-scheda.jpg", title: "Schede di Gioco", date: "COMMA 6A", href: productRoutes.games },
+    { id: 4, src: "/cabinet-earth.jpg", title: "Cabinet Earth", date: "MOBILE", href: productRoutes.cabinet },
+    { id: 5, src: "/monitor-open.jpg", title: "Monitor Open-Frame", date: "17/19/22", href: productRoutes.monitor },
+    { id: 6, src: "/accessori-divisori.jpg", title: "Accessori", date: "DIVISORI", href: productRoutes.accessori },
   ],
 };
 

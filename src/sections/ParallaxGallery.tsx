@@ -1,11 +1,70 @@
 import { useRef, useEffect } from 'react';
+import { Link } from 'react-router';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Ticket, ArrowRight } from 'lucide-react';
-import { parallaxGalleryConfig } from '../config';
+import { parallaxGalleryConfig, type GalleryImage, type ParallaxImage } from '../config';
 import { useIsMobile } from '../hooks/use-mobile';
 
 gsap.registerPlugin(ScrollTrigger);
+
+function ParallaxStripCard({ image, className }: { image: ParallaxImage; className: string }) {
+  const inner = (
+    <>
+      <img src={image.src} alt={image.alt} className="w-full h-full object-cover" loading="lazy" />
+      <div className="absolute inset-0 bg-gradient-to-t from-void-black/50 to-transparent" />
+      <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
+        <span className="text-[10px] font-mono-custom uppercase text-white/90">{image.alt}</span>
+        <ArrowRight className="w-3 h-3 text-neon-cyan" />
+      </div>
+    </>
+  );
+
+  if (image.href) {
+    return (
+      <Link to={image.href} className={`${className} group block`}>
+        {inner}
+      </Link>
+    );
+  }
+
+  return <div className={className}>{inner}</div>;
+}
+
+function GalleryCard({
+  image,
+  className,
+  style,
+}: {
+  image: GalleryImage;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <Link
+      to={image.href}
+      className={`relative flex-shrink-0 group cursor-pointer block ${className ?? ''}`}
+      style={style}
+    >
+      <div className="relative w-full sm:w-[450px] aspect-[3/2] sm:h-[300px] overflow-hidden rounded-xl">
+        <img
+          src={image.src}
+          alt={image.title}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-void-black/80 via-transparent to-transparent" />
+        <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4">
+          <p className="font-mono-custom text-xs text-neon-soft/80 mb-1">{image.date}</p>
+          <h3 className="font-display text-xl sm:text-2xl text-white group-hover:text-neon-soft transition-colors">
+            {image.title}
+          </h3>
+        </div>
+        <div className="absolute inset-0 bg-neon-cyan/0 group-hover:bg-neon-cyan/10 transition-colors duration-300" />
+      </div>
+    </Link>
+  );
+}
 
 const ParallaxGallery = () => {
   if (
@@ -115,10 +174,7 @@ const ParallaxGallery = () => {
           className="flex gap-3 sm:gap-4 mb-3 sm:mb-4 pl-4 sm:pl-6 will-change-transform"
         >
           {parallaxGalleryConfig.parallaxImagesTop.map((image) => (
-            <div key={image.id} className={imageCardClass}>
-              <img src={image.src} alt={image.alt} className="w-full h-full object-cover" loading="lazy" />
-              <div className="absolute inset-0 bg-gradient-to-t from-void-black/50 to-transparent" />
-            </div>
+            <ParallaxStripCard key={image.id} image={image} className={imageCardClass} />
           ))}
         </div>
 
@@ -128,10 +184,7 @@ const ParallaxGallery = () => {
           style={{ transform: isMobile ? 'translateX(-40px)' : 'translateX(-150px)' }}
         >
           {parallaxGalleryConfig.parallaxImagesBottom.map((image) => (
-            <div key={image.id} className={imageCardClass}>
-              <img src={image.src} alt={image.alt} className="w-full h-full object-cover" loading="lazy" />
-              <div className="absolute inset-0 bg-gradient-to-t from-void-black/50 to-transparent" />
-            </div>
+            <ParallaxStripCard key={image.id} image={image} className={imageCardClass} />
           ))}
         </div>
       </div>
@@ -163,22 +216,7 @@ const ParallaxGallery = () => {
           </h2>
           <div className="space-y-6">
             {parallaxGalleryConfig.galleryImages.map((image) => (
-              <article
-                key={image.id}
-                className="relative w-full aspect-[4/3] overflow-hidden rounded-xl"
-              >
-                <img
-                  src={image.src}
-                  alt={image.title}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-void-black/85 via-transparent to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4">
-                  <p className="font-mono-custom text-xs text-neon-soft/80 mb-1">{image.date}</p>
-                  <h3 className="font-display text-xl text-white">{image.title}</h3>
-                </div>
-              </article>
+              <GalleryCard key={image.id} image={image} />
             ))}
             <button
               type="button"
@@ -208,24 +246,11 @@ const ParallaxGallery = () => {
             {parallaxGalleryConfig.galleryImages.map((image, index) => (
               <div
                 key={image.id}
-                className="relative flex-shrink-0 group cursor-pointer"
+                className="relative"
                 style={{ marginTop: index % 2 === 0 ? '0' : '60px' }}
               >
-                <div className="relative w-[450px] h-[300px] overflow-hidden rounded-xl">
-                  <img
-                    src={image.src}
-                    alt={image.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-void-black/80 via-transparent to-transparent" />
-                  <div className="absolute bottom-6 left-6">
-                    <p className="font-mono-custom text-xs text-neon-soft/80 mb-1">{image.date}</p>
-                    <h3 className="font-display text-2xl text-white">{image.title}</h3>
-                  </div>
-                  <div className="absolute inset-0 bg-neon-cyan/0 group-hover:bg-neon-cyan/10 transition-colors duration-300" />
-                </div>
-                <div className="absolute -top-8 -left-4 font-mono-custom text-7xl text-white/5 font-bold">
+                <GalleryCard image={image} />
+                <div className="absolute -top-8 -left-4 font-mono-custom text-7xl text-white/5 font-bold pointer-events-none">
                   {String(index + 1).padStart(2, '0')}
                 </div>
               </div>

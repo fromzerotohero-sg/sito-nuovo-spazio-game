@@ -30,7 +30,7 @@ export default function Logo({
       width={280}
       height={157}
       className={cn(
-        'w-auto object-contain object-left logo-on-dark',
+        'w-auto object-contain object-left',
         sizeClasses[size],
         glow && 'logo-glow',
         className
