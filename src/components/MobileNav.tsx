@@ -47,7 +47,7 @@ export default function MobileNav({ links, className = '' }: MobileNavProps) {
           />
           <nav className="absolute top-0 right-0 h-full w-[min(100%,320px)] bg-void-dark border-l border-white/10 flex flex-col safe-area-top safe-area-bottom">
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 gap-3">
-              <Logo size="sm" linkTo="/" glow={false} className="max-w-[140px]" />
+              <Logo size="sm" linkTo="/" className="max-w-[160px]" />
               <button
                 type="button"
                 onClick={close}

@@ -42,6 +42,7 @@
   
   html {
     scroll-behavior: auto !important;
+    background-color: #050508;
   }
   
   body {
@@ -281,9 +282,9 @@ canvas {
   scroll-snap-align: start;
 }
 
-/* Optional logo glow — off by default to keep text sharp */
-.logo-glow {
-  filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.35));
+/* Logo: black in file disappears on dark UI, keeps red star + white outlines */
+.logo-blend {
+  mix-blend-mode: lighten;
 }
 
 @media (prefers-reduced-motion: reduce) {
