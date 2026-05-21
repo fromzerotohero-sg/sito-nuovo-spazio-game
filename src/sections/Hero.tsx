@@ -1,17 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router';
 import { gsap } from 'gsap';
-import { Play, Music, Disc, Calendar } from 'lucide-react';
 import { heroConfig } from '../config';
-import MobileNav from '../components/MobileNav';
-import Logo from '../components/Logo';
-
-const ICON_MAP = {
-  disc: Disc,
-  play: Play,
-  calendar: Calendar,
-  music: Music,
-};
+import SiteHeader from '../components/SiteHeader';
 
 const Hero = () => {
   if (!heroConfig.decodeText && !heroConfig.brandName && heroConfig.navItems.length === 0) {
@@ -19,7 +9,6 @@ const Hero = () => {
   }
 
   const heroRef = useRef<HTMLDivElement>(null);
-  const navRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const TARGET_TEXT = heroConfig.decodeText;
@@ -58,12 +47,6 @@ const Hero = () => {
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(
-        navRef.current,
-        { y: -100, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out', delay: 0.3 }
-      );
-
-      gsap.fromTo(
         subtitleRef.current,
         { y: 30, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out', delay: 1.5 }
@@ -76,45 +59,8 @@ const Hero = () => {
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  };
-
-  const mobileNavLinks = [
-    ...heroConfig.navItems.map((item) =>
-      item.href
-        ? { label: item.label, to: item.href }
-        : { label: item.label, onClick: () => scrollToSection(item.sectionId) }
-    ),
-    { label: heroConfig.ctaPrimary, onClick: () => scrollToSection(heroConfig.ctaPrimaryTarget) },
-    { label: heroConfig.ctaSecondary, onClick: () => scrollToSection(heroConfig.ctaSecondaryTarget) },
-  ];
-
-  const NavItem = ({ item }: { item: typeof heroConfig.navItems[0] }) => {
-    const IconComponent = ICON_MAP[item.icon];
-
-    if (item.href) {
-      return (
-        <Link
-          to={item.href}
-          className="flex items-center gap-1.5 px-3 py-2 text-[10px] sm:text-xs font-mono-custom uppercase tracking-wider text-white/80 hover:text-white transition-colors rounded-full hover:bg-white/5 whitespace-nowrap"
-        >
-          <IconComponent className="w-3.5 h-3.5 shrink-0" />
-          <span>{item.label}</span>
-        </Link>
-      );
-    }
-
-    return (
-      <button
-        type="button"
-        onClick={() => scrollToSection(item.sectionId)}
-        className="flex items-center gap-1.5 px-3 py-2 text-[10px] sm:text-xs font-mono-custom uppercase tracking-wider text-white/80 hover:text-white transition-colors rounded-full hover:bg-white/5 whitespace-nowrap"
-      >
-        <IconComponent className="w-3.5 h-3.5 shrink-0" />
-        <span>{item.label}</span>
-      </button>
-    );
   };
 
   return (
@@ -122,6 +68,8 @@ const Hero = () => {
       ref={heroRef}
       className="relative w-full min-h-[100dvh] h-[100dvh] overflow-hidden bg-void-black"
     >
+      <SiteHeader variant="home" />
+
       <div className="absolute inset-0 z-0">
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -131,25 +79,7 @@ const Hero = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-void-black/30 to-void-black" />
       </div>
 
-      {/* Top bar: brand + mobile menu */}
-      <div className="site-header-bar fixed top-0 left-0 right-0 z-50 flex items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:pt-4 sm:pb-3 safe-area-top">
-        <Logo size="md" />
-        <MobileNav links={mobileNavLinks} />
-      </div>
-
-      {/* Desktop nav pill */}
-      <nav
-        ref={navRef}
-        className="hidden md:block fixed top-6 left-1/2 -translate-x-1/2 z-50 nav-pill rounded-full px-2 py-2 max-w-[calc(100vw-2rem)]"
-      >
-        <div className="flex items-center gap-0.5 overflow-x-auto scrollbar-none">
-          {heroConfig.navItems.map((item) => (
-            <NavItem key={item.sectionId + (item.href || '')} item={item} />
-          ))}
-        </div>
-      </nav>
-
-      <div className="relative z-10 flex flex-col items-center justify-end h-full pb-8 sm:pb-16 md:pb-20 px-4 sm:px-6">
+      <div className="relative z-10 flex flex-col items-center justify-end h-full pb-8 sm:pb-16 md:pb-20 px-4 sm:px-6 pt-24">
         <h1
           ref={titleRef}
           className="decode-text text-[8vw] sm:text-[9vw] md:text-[10vw] lg:text-[8vw] font-bold text-white leading-[0.95] tracking-tighter mb-3 sm:mb-4 text-center max-w-[100vw] px-1 break-words"
@@ -186,7 +116,7 @@ const Hero = () => {
 
       <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-neon-cyan/30 to-transparent" />
 
-      <div className="hidden sm:block absolute top-20 sm:top-8 right-4 sm:right-8 text-right">
+      <div className="hidden sm:block absolute top-24 right-4 sm:right-8 text-right z-10">
         <p className="font-mono-custom text-xs text-white/40 uppercase tracking-wider">{heroConfig.cornerLabel}</p>
         <p className="font-mono-custom text-xs text-neon-soft/60">{heroConfig.cornerDetail}</p>
       </div>

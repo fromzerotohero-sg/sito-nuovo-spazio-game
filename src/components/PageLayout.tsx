@@ -1,7 +1,6 @@
 import { Link, useLocation } from 'react-router';
-import { Disc, Play, Calendar, Music, ArrowLeft, Wrench } from 'lucide-react';
-import MobileNav from './MobileNav';
-import Logo from './Logo';
+import { Disc, Play, Calendar, Music, Wrench } from 'lucide-react';
+import SiteHeader from './SiteHeader';
 
 interface PageLayoutProps {
   children: React.ReactNode;
@@ -19,37 +18,19 @@ const PAGE_NAV = [
 export default function PageLayout({ children, title }: PageLayoutProps) {
   const location = useLocation();
 
-  const mobileLinks = [
-    { label: 'Home', to: '/' },
-    ...PAGE_NAV.map((item) => ({ label: item.label, to: item.to })),
-  ];
-
   return (
     <div className="relative w-full min-h-screen bg-void-black overflow-x-hidden">
-      <nav className="site-header-bar fixed top-0 left-0 w-full z-50 flex items-center justify-between gap-3 px-4 sm:px-6 lg:px-12 py-4 sm:py-5 safe-area-top">
-        <Logo size="sm" className="relative z-10" />
+      <SiteHeader variant="page" />
 
-        <div className="hidden lg:flex items-center gap-1 bg-white/5 backdrop-blur-xl rounded-full px-2 py-1.5 border border-white/10">
-          <NavPill to="/games" icon={<Disc size={14} />} label="Games" active={location.pathname === '/games'} />
-          <NavPill to="/cabinet" icon={<Play size={14} />} label="Cabinet" active={location.pathname === '/cabinet'} />
-          <NavPill to="/monitor" icon={<Calendar size={14} />} label="Monitor" active={location.pathname === '/monitor'} />
-          <NavPill to="/accessori" icon={<Music size={14} />} label="Accessori" active={location.pathname === '/accessori'} />
-          <NavPill to="/assistenza" icon={<Wrench size={14} />} label="Assistenza" active={location.pathname === '/assistenza'} />
-        </div>
-
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <MobileNav links={mobileLinks} />
-          <Link
-            to="/"
-            className="relative z-10 flex items-center gap-2 text-white/60 hover:text-white text-xs tracking-[0.15em] sm:tracking-[0.2em] uppercase transition-colors"
-          >
-            <ArrowLeft size={14} />
-            <span className="hidden sm:inline">Home</span>
-          </Link>
-        </div>
+      <nav className="hidden lg:flex fixed top-[4.5rem] left-1/2 -translate-x-1/2 z-[90] items-center gap-1 bg-white/5 backdrop-blur-xl rounded-full px-2 py-1.5 border border-white/10">
+        <NavPill to="/games" icon={<Disc size={14} />} label="Games" active={location.pathname === '/games'} />
+        <NavPill to="/cabinet" icon={<Play size={14} />} label="Cabinet" active={location.pathname === '/cabinet'} />
+        <NavPill to="/monitor" icon={<Calendar size={14} />} label="Monitor" active={location.pathname === '/monitor'} />
+        <NavPill to="/accessori" icon={<Music size={14} />} label="Accessori" active={location.pathname === '/accessori'} />
+        <NavPill to="/assistenza" icon={<Wrench size={14} />} label="Assistenza" active={location.pathname === '/assistenza'} />
       </nav>
 
-      <header className="relative pt-24 sm:pt-32 pb-10 sm:pb-16 px-4 sm:px-6 lg:px-12">
+      <header className="relative pt-28 sm:pt-36 lg:pt-40 pb-10 sm:pb-16 px-4 sm:px-6 lg:px-12">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-2 mb-4 sm:mb-6 text-white/40 text-[10px] sm:text-xs tracking-[0.15em] sm:tracking-[0.2em] uppercase flex-wrap">
             <Link to="/" className="hover:text-white transition-colors">Home</Link>
@@ -71,7 +52,7 @@ export default function PageLayout({ children, title }: PageLayoutProps) {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col gap-10 md:flex-row md:justify-between md:items-start">
             <div className="min-w-0">
-              <Logo size="lg" linkTo="/" />
+              <span className="text-white font-display text-lg sm:text-xl tracking-[0.15em] uppercase">SPAZIOGAME</span>
               <p className="mt-4 text-white/40 text-sm max-w-md leading-relaxed">
                 Spazio Game è un'azienda dinamica e giovane con sede a Soncino (CR).
                 Offriamo un servizio a 360°: schede di gioco comma 6a, cabinet, monitor,
