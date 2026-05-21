@@ -133,7 +133,7 @@ const Hero = () => {
 
       {/* Top bar: brand + mobile menu */}
       <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-6 pt-4 sm:pt-6 safe-area-top">
-        <Logo size="md" className="max-w-[min(52vw,200px)] sm:max-w-[220px]" />
+        <Logo size="md" />
         <MobileNav links={mobileNavLinks} />
       </div>
 

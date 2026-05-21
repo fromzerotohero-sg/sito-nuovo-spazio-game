@@ -281,18 +281,9 @@ canvas {
   scroll-snap-align: start;
 }
 
-/* Brand logo glow (red star + cyan accent) */
+/* Optional logo glow — off by default to keep text sharp */
 .logo-glow {
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4))
-    drop-shadow(0 0 12px rgba(239, 68, 68, 0.4));
-  transition: filter 0.35s ease, transform 0.35s ease;
-}
-
-a:hover .logo-glow,
-.logo-glow:hover {
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5))
-    drop-shadow(0 0 20px rgba(239, 68, 68, 0.55));
-  transform: scale(1.02);
+  filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.35));
 }
 
 @media (prefers-reduced-motion: reduce) {
