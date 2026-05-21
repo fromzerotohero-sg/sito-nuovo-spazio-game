@@ -29,7 +29,7 @@ export default function MonitorPage() {
   return (
     <PageLayout title="Monitor">
       {/* Intro */}
-      <section className="px-6 lg:px-12 pb-16">
+      <section className="px-4 sm:px-6 lg:px-12 pb-16">
         <div className="max-w-6xl mx-auto">
           <p className="text-white/60 text-lg leading-relaxed max-w-3xl">
             Spazio Game offre monitor open-frame da 17&quot;, 19&quot; LCD e 19&quot; LED in formato 4:3,
@@ -40,7 +40,7 @@ export default function MonitorPage() {
       </section>
 
       {/* Monitor Types */}
-      <section className="px-6 lg:px-12 py-16 border-t border-white/10">
+      <section className="px-4 sm:px-6 lg:px-12 py-16 border-t border-white/10">
         <div className="max-w-6xl mx-auto space-y-16">
           {monitors.map((mon, index) => (
             <div key={`${mon.size}-${mon.type}`} className={`grid lg:grid-cols-2 gap-12 items-center ${index % 2 === 1 ? 'lg:flex-row-reverse' : ''}`}>
@@ -88,7 +88,7 @@ export default function MonitorPage() {
       </section>
 
       {/* Specs Table */}
-      <section className="px-6 lg:px-12 py-16 border-t border-white/10">
+      <section className="px-4 sm:px-6 lg:px-12 py-16 border-t border-white/10">
         <div className="max-w-4xl mx-auto">
           <h3 className="text-2xl font-display text-white uppercase tracking-tight mb-8 text-center">
                 Confronto Modelli
@@ -133,7 +133,7 @@ export default function MonitorPage() {
       </section>
 
       {/* CTA */}
-      <section className="px-6 lg:px-12 py-24">
+      <section className="px-4 sm:px-6 lg:px-12 py-24">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-5xl font-display text-white uppercase tracking-tight mb-6">
             Scegli il monitor perfetto

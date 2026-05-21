@@ -52,7 +52,7 @@ export default function AccessoriPage() {
   return (
     <PageLayout title="Accessori">
       {/* Intro */}
-      <section className="px-6 lg:px-12 pb-16">
+      <section className="px-4 sm:px-6 lg:px-12 pb-16">
         <div className="max-w-6xl mx-auto">
           <p className="text-white/60 text-lg leading-relaxed max-w-3xl">
             Completiamo la tua sala giochi con una gamma completa di accessori: divisori, sgabelli,
@@ -63,7 +63,7 @@ export default function AccessoriPage() {
       </section>
 
       {/* Categories Grid */}
-      <section className="px-6 lg:px-12 py-16 border-t border-white/10">
+      <section className="px-4 sm:px-6 lg:px-12 py-16 border-t border-white/10">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-8">
             {categories.map((cat) => (
@@ -92,7 +92,7 @@ export default function AccessoriPage() {
       </section>
 
       {/* Products Showcase */}
-      <section className="px-6 lg:px-12 py-16 border-t border-white/10">
+      <section className="px-4 sm:px-6 lg:px-12 py-16 border-t border-white/10">
         <div className="max-w-6xl mx-auto">
           <h3 className="text-2xl font-display text-white uppercase tracking-tight mb-12 text-center">
             I Nostri Prodotti
@@ -148,7 +148,7 @@ export default function AccessoriPage() {
       </section>
 
       {/* Brands */}
-      <section className="px-6 lg:px-12 py-16 border-t border-white/10">
+      <section className="px-4 sm:px-6 lg:px-12 py-16 border-t border-white/10">
         <div className="max-w-4xl mx-auto text-center">
           <h3 className="text-2xl font-display text-white uppercase tracking-tight mb-6">
             Marchi Disponibili
@@ -170,7 +170,7 @@ export default function AccessoriPage() {
       </section>
 
       {/* CTA */}
-      <section className="px-6 lg:px-12 py-24">
+      <section className="px-4 sm:px-6 lg:px-12 py-24">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-5xl font-display text-white uppercase tracking-tight mb-6">
             Completa la tua sala

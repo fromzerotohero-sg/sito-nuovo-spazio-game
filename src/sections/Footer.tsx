@@ -70,13 +70,13 @@ const Footer = () => {
       className="relative w-full bg-void-black overflow-hidden"
     >
       {/* Artist portrait section */}
-      <div className="relative h-screen flex items-center justify-center overflow-hidden">
+      <div className="relative min-h-[70vh] sm:min-h-screen flex items-center justify-center overflow-hidden py-16 sm:py-0">
         {/* Background portrait */}
         <div
           ref={portraitRef}
           className="absolute inset-0 flex items-center justify-center"
         >
-          <div className="relative w-full max-w-2xl aspect-[2/3] mx-auto">
+          <div className="relative w-full max-w-xs sm:max-w-md md:max-w-2xl aspect-[2/3] mx-auto px-6 sm:px-0">
             <img
               src={footerConfig.portraitImage}
               alt={footerConfig.portraitAlt}
@@ -93,26 +93,26 @@ const Footer = () => {
           ref={titleRef}
           className="relative z-10 text-center will-change-transform"
         >
-          <h2 className="font-display text-[15vw] text-white leading-none tracking-tighter">
+          <h2 className="font-display text-[18vw] sm:text-[15vw] text-white leading-none tracking-tighter px-2">
             {footerConfig.heroTitle}
           </h2>
-          <p className="font-mono-custom text-lg text-neon-soft/60 uppercase tracking-[0.5em] mt-4">
+          <p className="font-mono-custom text-sm sm:text-lg text-neon-soft/60 uppercase tracking-[0.3em] sm:tracking-[0.5em] mt-3 sm:mt-4">
             {footerConfig.heroSubtitle}
           </p>
         </div>
 
         {/* Artist name */}
-        <div className="absolute bottom-20 left-12 z-20">
+        <div className="absolute bottom-6 left-4 right-4 sm:bottom-20 sm:left-12 sm:right-auto z-20 text-center sm:text-left">
           <p className="font-mono-custom text-xs text-white/40 uppercase tracking-wider mb-2">
             {footerConfig.artistLabel}
           </p>
-          <h3 className="font-display text-4xl text-white">{footerConfig.artistName}</h3>
-          <p className="font-mono-custom text-sm text-neon-soft/60">{footerConfig.artistSubtitle}</p>
+          <h3 className="font-display text-2xl sm:text-4xl text-white">{footerConfig.artistName}</h3>
+          <p className="font-mono-custom text-xs sm:text-sm text-neon-soft/60">{footerConfig.artistSubtitle}</p>
         </div>
       </div>
 
       {/* Footer content */}
-      <div className="relative bg-void-black py-20 px-6 md:px-12">
+      <div className="relative bg-void-black py-12 sm:py-20 px-4 sm:px-6 md:px-12">
         {/* Top divider */}
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
@@ -208,15 +208,16 @@ const Footer = () => {
               <p className="text-sm text-white/50 mb-4">
                 {footerConfig.newsletterDescription}
               </p>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="email"
                   placeholder="your@email.com"
-                  className="flex-grow px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-neon-cyan/50"
+                  className="w-full min-w-0 flex-grow px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-neon-cyan/50"
                 />
                 <button
+                  type="button"
                   onClick={handleContactClick}
-                  className="px-4 py-3 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm font-medium hover:bg-neon-cyan/30 transition-colors"
+                  className="w-full sm:w-auto shrink-0 px-4 py-3 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm font-medium hover:bg-neon-cyan/30 transition-colors"
                 >
                   {footerConfig.newsletterButtonText}
                 </button>
@@ -230,7 +231,7 @@ const Footer = () => {
               <p className="font-mono-custom text-xs text-white/30 uppercase tracking-wider mb-4">
                 Gallery
               </p>
-              <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2">
                 {footerConfig.galleryImages.map((image, index) => (
                   <div
                     key={image.id}
@@ -256,7 +257,7 @@ const Footer = () => {
             <p className="text-xs text-white/30 font-mono-custom">
               {footerConfig.copyrightText}
             </p>
-            <div className="flex gap-6">
+            <div className="flex flex-wrap justify-center md:justify-end gap-4 sm:gap-6">
               {footerConfig.bottomLinks.map((link) => (
                 <a key={link} href="#" className="text-xs text-white/30 hover:text-white/60 transition-colors">
                   {link}

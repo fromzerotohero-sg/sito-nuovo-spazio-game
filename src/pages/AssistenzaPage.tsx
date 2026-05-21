@@ -57,7 +57,7 @@ export default function AssistenzaPage() {
   return (
     <PageLayout title="Assistenza">
       {/* Intro */}
-      <section className="px-6 lg:px-12 pb-16">
+      <section className="px-4 sm:px-6 lg:px-12 pb-16">
         <div className="max-w-6xl mx-auto">
           <p className="text-white/60 text-lg leading-relaxed max-w-3xl">
             Il nostro centro assistenza offre supporto professionale per noleggiatori e concessionari.
@@ -68,7 +68,7 @@ export default function AssistenzaPage() {
       </section>
 
       {/* Services */}
-      <section className="px-6 lg:px-12 py-16 border-t border-white/10">
+      <section className="px-4 sm:px-6 lg:px-12 py-16 border-t border-white/10">
         <div className="max-w-6xl mx-auto space-y-12">
           {services.map((service, index) => (
             <div
@@ -120,7 +120,7 @@ export default function AssistenzaPage() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="px-6 lg:px-12 py-16 border-t border-white/10">
+      <section className="px-4 sm:px-6 lg:px-12 py-16 border-t border-white/10">
         <div className="max-w-6xl mx-auto">
           <h3 className="text-2xl font-display text-white uppercase tracking-tight mb-12 text-center">
             Perché Scegliere la Nostra Assistenza
@@ -156,7 +156,7 @@ export default function AssistenzaPage() {
       </section>
 
       {/* Contact Banner */}
-      <section className="px-6 lg:px-12 py-16 border-t border-white/10">
+      <section className="px-4 sm:px-6 lg:px-12 py-16 border-t border-white/10">
         <div className="max-w-4xl mx-auto p-8 bg-gradient-to-r from-neon-cyan/10 to-transparent rounded-lg border border-neon-cyan/20">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
@@ -179,7 +179,7 @@ export default function AssistenzaPage() {
       </section>
 
       {/* CTA */}
-      <section className="px-6 lg:px-12 py-24">
+      <section className="px-4 sm:px-6 lg:px-12 py-24">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-5xl font-display text-white uppercase tracking-tight mb-6">
             Serve assistenza?

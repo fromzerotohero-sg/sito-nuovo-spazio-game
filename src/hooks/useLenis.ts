@@ -9,7 +9,15 @@ export const useLenis = () => {
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
-    // Initialize Lenis with smooth scrolling
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+    const isNarrowViewport = window.matchMedia('(max-width: 767px)').matches;
+
+    // Lenis + heavy ScrollTrigger pinning is janky on phones; use native scroll
+    if (prefersReducedMotion || isCoarsePointer || isNarrowViewport) {
+      return;
+    }
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),

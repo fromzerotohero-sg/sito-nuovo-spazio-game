@@ -5,7 +5,7 @@ export default function CabinetPage() {
   return (
     <PageLayout title="Cabinet">
       {/* Intro */}
-      <section className="px-6 lg:px-12 pb-16">
+      <section className="px-4 sm:px-6 lg:px-12 pb-16">
         <div className="max-w-6xl mx-auto">
           <p className="text-white/60 text-lg leading-relaxed max-w-3xl">
             Il cabinet Earth di Spazio Game è progettato per valorizzare qualsiasi sala da gioco.
@@ -16,7 +16,7 @@ export default function CabinetPage() {
       </section>
 
       {/* Main Showcase */}
-      <section className="px-6 lg:px-12 py-16 border-t border-white/10">
+      <section className="px-4 sm:px-6 lg:px-12 py-16 border-t border-white/10">
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Image */}
@@ -112,7 +112,7 @@ export default function CabinetPage() {
       </section>
 
       {/* Features Grid */}
-      <section className="px-6 lg:px-12 py-16 border-t border-white/10">
+      <section className="px-4 sm:px-6 lg:px-12 py-16 border-t border-white/10">
         <div className="max-w-6xl mx-auto">
           <h3 className="text-2xl font-display text-white uppercase tracking-tight mb-8 text-center">
             Caratteristiche Principali
@@ -133,7 +133,7 @@ export default function CabinetPage() {
       </section>
 
       {/* CTA */}
-      <section className="px-6 lg:px-12 py-24">
+      <section className="px-4 sm:px-6 lg:px-12 py-24">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-5xl font-display text-white uppercase tracking-tight mb-6">
             Valuta il tuo nuovo cabinet

@@ -5,7 +5,7 @@ export default function GamesPage() {
   return (
     <PageLayout title="Games">
       {/* Intro */}
-      <section className="px-6 lg:px-12 pb-16">
+      <section className="px-4 sm:px-6 lg:px-12 pb-16">
         <div className="max-w-6xl mx-auto">
           <p className="text-white/60 text-lg leading-relaxed max-w-3xl">
             Spazio Game offre schede di gioco comma 6a con payout al 65%, complete di cabinet e monitor.
@@ -15,7 +15,7 @@ export default function GamesPage() {
       </section>
 
       {/* Master 5 */}
-      <section className="px-6 lg:px-12 py-16 border-t border-white/10">
+      <section className="px-4 sm:px-6 lg:px-12 py-16 border-t border-white/10">
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             {/* Image */}
@@ -54,7 +54,7 @@ export default function GamesPage() {
               </div>
 
               <h4 className="text-white/80 text-xs tracking-[0.2em] uppercase mb-4">Giochi Inclusi (7 titoli)</h4>
-              <div className="grid grid-cols-2 gap-2 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-8">
                 {['Clash for the Empire', 'Farms Gold', 'Fruit Bar', 'Jungle Course', 'Pendragon', 'West Cowboy', 'Wild Galleon'].map((game) => (
                   <div key={game} className="flex items-center gap-2 text-white/60 text-sm">
                     <div className="w-1.5 h-1.5 rounded-full bg-neon-cyan" />
@@ -63,7 +63,7 @@ export default function GamesPage() {
                 ))}
               </div>
 
-              <button className="flex items-center gap-3 px-6 py-3 bg-neon-cyan text-void-black font-medium text-sm tracking-[0.1em] uppercase rounded-full hover:bg-white transition-colors">
+              <button type="button" className="w-full sm:w-auto flex items-center justify-center gap-3 px-6 py-3 bg-neon-cyan text-void-black font-medium text-sm tracking-[0.1em] uppercase rounded-full hover:bg-white transition-colors">
                 <Download size={16} />
                 Scarica Scheda Esplicativa
               </button>
@@ -73,7 +73,7 @@ export default function GamesPage() {
       </section>
 
       {/* Super 7 */}
-      <section className="px-6 lg:px-12 py-16 border-t border-white/10">
+      <section className="px-4 sm:px-6 lg:px-12 py-16 border-t border-white/10">
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             {/* Details - reversed order */}
@@ -98,7 +98,7 @@ export default function GamesPage() {
               </div>
 
               <h4 className="text-white/80 text-xs tracking-[0.2em] uppercase mb-4">Giochi Inclusi (5 titoli)</h4>
-              <div className="grid grid-cols-2 gap-2 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-8">
                 {["Pirate's Treasure", 'The Book of Egypt', 'Irish Gardens', 'Diamonds Fever', 'The Chicken'].map((game) => (
                   <div key={game} className="flex items-center gap-2 text-white/60 text-sm">
                     <div className="w-1.5 h-1.5 rounded-full bg-neon-cyan" />
@@ -107,7 +107,7 @@ export default function GamesPage() {
                 ))}
               </div>
 
-              <button className="flex items-center gap-3 px-6 py-3 bg-neon-cyan text-void-black font-medium text-sm tracking-[0.1em] uppercase rounded-full hover:bg-white transition-colors">
+              <button type="button" className="w-full sm:w-auto flex items-center justify-center gap-3 px-6 py-3 bg-neon-cyan text-void-black font-medium text-sm tracking-[0.1em] uppercase rounded-full hover:bg-white transition-colors">
                 <Download size={16} />
                 Scarica Scheda Esplicativa
               </button>
@@ -131,7 +131,7 @@ export default function GamesPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="px-6 lg:px-12 py-24">
+      <section className="px-4 sm:px-6 lg:px-12 py-24">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-5xl font-display text-white uppercase tracking-tight mb-6">
             Vuoi saperne di più?

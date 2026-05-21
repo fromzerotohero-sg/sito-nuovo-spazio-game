@@ -46,7 +46,7 @@ export const heroConfig: HeroConfig = {
   decodeChars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
   subtitle: "Vendita schede di gioco comma 6a, cabinet, monitor e assistenza tecnica per il gaming terrestre. Servizio a 360° per sale slot e noleggiatori.",
   ctaPrimary: "Scopri i Prodotti",
-  ctaPrimaryTarget: "features",
+  ctaPrimaryTarget: "albums",
   ctaSecondary: "Contattaci",
   ctaSecondaryTarget: "contact",
   cornerLabel: "ISO 9001",
