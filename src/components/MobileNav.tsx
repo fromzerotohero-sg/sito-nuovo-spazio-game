@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import { Menu, X } from 'lucide-react';
+import Logo from './Logo';
 
 export interface MobileNavLink {
   label: string;
@@ -45,10 +46,8 @@ export default function MobileNav({ links, className = '' }: MobileNavProps) {
             onClick={close}
           />
           <nav className="absolute top-0 right-0 h-full w-[min(100%,320px)] bg-void-dark border-l border-white/10 flex flex-col safe-area-top safe-area-bottom">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
-              <span className="font-display text-sm tracking-[0.15em] uppercase text-white">
-                Menu
-              </span>
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 gap-3">
+              <Logo size="sm" linkTo="/" glow={false} className="max-w-[140px]" />
               <button
                 type="button"
                 onClick={close}

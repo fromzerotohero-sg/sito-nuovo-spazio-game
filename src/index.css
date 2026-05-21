@@ -281,6 +281,25 @@ canvas {
   scroll-snap-align: start;
 }
 
+/* Logo: black areas disappear on dark UI */
+.logo-on-dark {
+  mix-blend-mode: screen;
+}
+
+/* Brand logo glow (red star + cyan accent) */
+.logo-glow {
+  filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.35))
+    drop-shadow(0 0 24px rgba(0, 212, 255, 0.12));
+  transition: filter 0.35s ease, transform 0.35s ease;
+}
+
+a:hover .logo-glow,
+.logo-glow:hover {
+  filter: drop-shadow(0 0 16px rgba(239, 68, 68, 0.55))
+    drop-shadow(0 0 32px rgba(0, 212, 255, 0.22));
+  transform: scale(1.02);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee,
   .animate-spin-slow {

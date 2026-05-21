@@ -16,6 +16,12 @@ export const siteConfig: SiteConfig = {
   language: "it",
 };
 
+export const brandAssets = {
+  logo: "/logo-spaziogame.png",
+  logoTransparent: "/logo-spaziogame-transparent.png",
+  logoAlt: "Spazio Game — Let's Play It",
+} as const;
+
 // -- Hero Section -------------------------------------------------------------
 export interface HeroNavItem {
   label: string;

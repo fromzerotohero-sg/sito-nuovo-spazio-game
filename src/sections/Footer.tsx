@@ -4,6 +4,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Instagram, Twitter, Youtube, Music2, Mail, Phone, MapPin, ExternalLink } from 'lucide-react';
 import { footerConfig } from '../config';
+import Logo from '../components/Logo';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -121,11 +122,8 @@ const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
             {/* Brand */}
             <div>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-full bg-neon-cyan/20 flex items-center justify-center">
-                  <Music2 className="w-5 h-5 text-neon-cyan" />
-                </div>
-                <span className="font-display text-2xl text-white">{footerConfig.brandName}</span>
+              <div className="mb-6">
+                <Logo size="lg" linkTo="/" className="max-w-[240px]" />
               </div>
               <p className="text-sm text-white/50 leading-relaxed mb-6">
                 {footerConfig.brandDescription}

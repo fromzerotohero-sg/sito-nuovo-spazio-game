@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router';
 import { Disc, Play, Calendar, Music, ArrowLeft, Wrench } from 'lucide-react';
 import MobileNav from './MobileNav';
+import Logo from './Logo';
 
 interface PageLayoutProps {
   children: React.ReactNode;
@@ -26,12 +27,7 @@ export default function PageLayout({ children, title }: PageLayoutProps) {
   return (
     <div className="relative w-full min-h-screen bg-void-black overflow-x-hidden">
       <nav className="fixed top-0 left-0 w-full z-50 flex items-center justify-between gap-3 px-4 sm:px-6 lg:px-12 py-4 sm:py-5 safe-area-top bg-void-black/80 backdrop-blur-md border-b border-white/5 md:bg-transparent md:backdrop-blur-none md:border-b-0">
-        <Link
-          to="/"
-          className="relative z-10 text-white font-display text-base sm:text-xl tracking-[0.12em] sm:tracking-[0.15em] uppercase shrink-0"
-        >
-          SPAZIOGAME
-        </Link>
+        <Logo size="sm" className="relative z-10 max-w-[min(42vw,160px)] sm:max-w-[180px]" />
 
         <div className="hidden lg:flex items-center gap-1 bg-white/5 backdrop-blur-xl rounded-full px-2 py-1.5 border border-white/10">
           <NavPill to="/games" icon={<Disc size={14} />} label="Games" active={location.pathname === '/games'} />
@@ -75,9 +71,7 @@ export default function PageLayout({ children, title }: PageLayoutProps) {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col gap-10 md:flex-row md:justify-between md:items-start">
             <div className="min-w-0">
-              <Link to="/" className="text-white font-display text-lg sm:text-xl tracking-[0.15em] uppercase">
-                SPAZIOGAME
-              </Link>
+              <Logo size="lg" linkTo="/" />
               <p className="mt-4 text-white/40 text-sm max-w-md leading-relaxed">
                 Spazio Game è un'azienda dinamica e giovane con sede a Soncino (CR).
                 Offriamo un servizio a 360°: schede di gioco comma 6a, cabinet, monitor,

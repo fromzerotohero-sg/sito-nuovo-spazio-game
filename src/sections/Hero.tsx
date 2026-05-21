@@ -4,6 +4,7 @@ import { gsap } from 'gsap';
 import { Play, Music, Disc, Calendar } from 'lucide-react';
 import { heroConfig } from '../config';
 import MobileNav from '../components/MobileNav';
+import Logo from '../components/Logo';
 
 const ICON_MAP = {
   disc: Disc,
@@ -132,14 +133,7 @@ const Hero = () => {
 
       {/* Top bar: brand + mobile menu */}
       <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-6 pt-4 sm:pt-6 safe-area-top">
-        <Link to="/" className="flex items-center gap-2 min-w-0">
-          <div className="w-8 h-8 shrink-0 rounded-full bg-neon-cyan/20 flex items-center justify-center">
-            <Disc className="w-4 h-4 text-neon-cyan" />
-          </div>
-          <span className="font-display text-sm sm:text-lg text-white truncate">
-            {heroConfig.brandName}
-          </span>
-        </Link>
+        <Logo size="md" className="max-w-[min(52vw,200px)] sm:max-w-[220px]" />
         <MobileNav links={mobileNavLinks} />
       </div>
 
