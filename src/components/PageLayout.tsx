@@ -26,7 +26,7 @@ export default function PageLayout({ children, title }: PageLayoutProps) {
 
   return (
     <div className="relative w-full min-h-screen bg-void-black overflow-x-hidden">
-      <nav className="fixed top-0 left-0 w-full z-50 flex items-center justify-between gap-3 px-4 sm:px-6 lg:px-12 py-4 sm:py-5 safe-area-top bg-void-black/80 backdrop-blur-md border-b border-white/5 md:bg-transparent md:backdrop-blur-none md:border-b-0">
+      <nav className="site-header-bar fixed top-0 left-0 w-full z-50 flex items-center justify-between gap-3 px-4 sm:px-6 lg:px-12 py-4 sm:py-5 safe-area-top">
         <Logo size="sm" className="relative z-10" />
 
         <div className="hidden lg:flex items-center gap-1 bg-white/5 backdrop-blur-xl rounded-full px-2 py-1.5 border border-white/10">

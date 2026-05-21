@@ -272,6 +272,13 @@ canvas {
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
 }
 
+/* Header: pure black matches logo file background (#000) */
+.site-header-bar {
+  background-color: #000000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
 /* Horizontal snap scroll (mobile galleries) */
 .snap-x-mandatory {
   scroll-snap-type: x mandatory;
@@ -282,10 +289,6 @@ canvas {
   scroll-snap-align: start;
 }
 
-/* Logo: black in file disappears on dark UI, keeps red star + white outlines */
-.logo-blend {
-  mix-blend-mode: lighten;
-}
 
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee,

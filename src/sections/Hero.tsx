@@ -132,7 +132,7 @@ const Hero = () => {
       </div>
 
       {/* Top bar: brand + mobile menu */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 safe-area-top bg-void-black/50 backdrop-blur-md border-b border-white/5">
+      <div className="site-header-bar fixed top-0 left-0 right-0 z-50 flex items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:pt-4 sm:pb-3 safe-area-top">
         <Logo size="md" />
         <MobileNav links={mobileNavLinks} />
       </div>

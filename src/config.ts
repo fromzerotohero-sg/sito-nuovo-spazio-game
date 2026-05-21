@@ -17,9 +17,8 @@ export const siteConfig: SiteConfig = {
 };
 
 export const brandAssets = {
-  /** Original file — rendered with mix-blend lighten (no white matte box) */
-  logo: "/logo-spaziogame.png",
-  logo2x: "/logo-spaziogame@2x.png",
+  logo: "/logo-spaziogame-white.png",
+  logo2x: "/logo-spaziogame-white.png",
   logoAlt: "Spazio Game — Let's Play It",
 } as const;
 
