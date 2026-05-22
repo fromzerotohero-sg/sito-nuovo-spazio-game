@@ -1,7 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { Loader2, LogOut, RotateCcw, Upload } from 'lucide-react';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import {
+  supabase,
+  isSupabaseConfigured,
+  supabaseConfigError,
+  SUPABASE_SETUP_HINT,
+} from '../lib/supabase';
 import {
   resetSiteAssetToDefault,
   uploadSiteAsset,
@@ -128,14 +133,38 @@ export default function AdminPage() {
   }
 
   if (!isSupabaseConfigured) {
+    const swappedKeyInUrl = supabaseConfigError === 'url_is_api_key';
     return (
-      <div className="min-h-screen bg-void-black text-white p-8">
-        <h1 className="text-2xl font-display mb-4">Admin</h1>
-        <p className="text-white/60 max-w-lg">
-          Supabase non configurato. Aggiungi <code className="text-neon-cyan">VITE_SUPABASE_URL</code> e{' '}
-          <code className="text-neon-cyan">VITE_SUPABASE_ANON_KEY</code> su Vercel e in un file{' '}
-          <code className="text-neon-cyan">.env.local</code>.
-        </p>
+      <div className="min-h-screen bg-void-black text-white p-8 max-w-2xl">
+        <h1 className="text-2xl font-display mb-4">Configurazione Supabase</h1>
+        {swappedKeyInUrl ? (
+          <>
+            <p className="text-red-400/90 text-sm mb-4">
+              Su Vercel la chiave <strong>publishable</strong> è stata messa in{' '}
+              <code className="text-neon-cyan">{SUPABASE_SETUP_HINT.urlName}</code> invece che nell&apos;URL del
+              progetto. Per questo vedi <code className="text-white/70">ERR_NAME_NOT_RESOLVED</code>.
+            </p>
+            <p className="text-white/60 text-sm mb-4">Imposta così (Settings → Environment Variables):</p>
+            <ul className="text-sm font-mono space-y-2 mb-6 text-white/80">
+              <li>
+                <span className="text-neon-cyan">{SUPABASE_SETUP_HINT.urlName}</span>
+                <br />
+                <span className="text-white/50">{SUPABASE_SETUP_HINT.url}</span>
+              </li>
+              <li>
+                <span className="text-neon-cyan">{SUPABASE_SETUP_HINT.keyName}</span>
+                <br />
+                <span className="text-white/50">sb_publishable_… (chiave anon da Supabase → API)</span>
+              </li>
+            </ul>
+            <p className="text-white/40 text-xs">Poi Redeploy su Vercel.</p>
+          </>
+        ) : (
+          <p className="text-white/60 max-w-lg">
+            Supabase non configurato. Aggiungi <code className="text-neon-cyan">{SUPABASE_SETUP_HINT.urlName}</code>{' '}
+            e <code className="text-neon-cyan">{SUPABASE_SETUP_HINT.keyName}</code> su Vercel.
+          </p>
+        )}
         <Link to="/" className="inline-block mt-6 text-neon-cyan hover:underline">
           ← Torna al sito
         </Link>
