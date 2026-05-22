@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, Suspense } from 'react';
+import { useRef, useEffect, useState, Suspense, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useTexture, Environment } from '@react-three/drei';
@@ -8,20 +8,22 @@ import * as THREE from 'three';
 import { ArrowRight } from 'lucide-react';
 import { albumCubeConfig } from '../config';
 import { useIsMobile } from '../hooks/use-mobile';
+import { useSiteAssets } from '../context/SiteAssetsProvider';
 
 gsap.registerPlugin(ScrollTrigger);
 
 interface CubeProps {
   rotationProgress: number;
   href: string;
+  cubeTextures: string[];
 }
 
-const Cube = ({ rotationProgress, href }: CubeProps) => {
+const Cube = ({ rotationProgress, href, cubeTextures }: CubeProps) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const navigate = useNavigate();
   const { viewport } = useThree();
 
-  const textures = useTexture(albumCubeConfig.cubeTextures);
+  const textures = useTexture(cubeTextures);
   const cubeSize = Math.min(viewport.width * 0.55, viewport.height * 0.35, 3);
 
   useFrame(() => {
@@ -77,6 +79,14 @@ const AlbumCube = () => {
   }
 
   const isMobile = useIsMobile();
+  const { resolve } = useSiteAssets();
+  const cubeTextures = useMemo(
+    () =>
+      albumCubeConfig.cubeTextures.map((path, index) =>
+        resolve(`album.cube.${index}`, path),
+      ),
+    [resolve],
+  );
   const sectionRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const [rotationProgress, setRotationProgress] = useState(0);
@@ -156,7 +166,12 @@ const AlbumCube = () => {
             <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} castShadow />
             <spotLight position={[-10, -10, -10]} angle={0.15} penumbra={1} intensity={0.5} color="#9DC4FF" />
             <pointLight position={[0, 0, 5]} intensity={0.5} color="#00D4FF" />
-            <Cube rotationProgress={rotationProgress} href={currentAlbum.href} />
+            <Cube
+              key={cubeTextures.join('|')}
+              rotationProgress={rotationProgress}
+              href={currentAlbum.href}
+              cubeTextures={cubeTextures}
+            />
             <Environment preset="city" />
           </Suspense>
         </Canvas>

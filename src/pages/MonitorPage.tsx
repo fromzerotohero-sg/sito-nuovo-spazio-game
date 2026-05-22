@@ -1,4 +1,5 @@
 import PageLayout from '../components/PageLayout';
+import SiteImage from '../components/SiteImage';
 import { Monitor, Check } from 'lucide-react';
 
 export default function MonitorPage() {
@@ -47,8 +48,9 @@ export default function MonitorPage() {
               {/* Image side */}
               <div className={index % 2 === 1 ? 'order-1 lg:order-2' : ''}>
                 <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-void-dark flex items-center justify-center">
-                  <img
-                    src="/monitor-open.jpg"
+                  <SiteImage
+                    assetKey="page.monitor.hero"
+                    fallback="/monitor-open.jpg"
                     alt={`Monitor ${mon.size} ${mon.type}`}
                     className="w-full h-full object-cover"
                   />

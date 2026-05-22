@@ -1,4 +1,5 @@
 import PageLayout from '../components/PageLayout';
+import SiteImage from '../components/SiteImage';
 import { Download, Monitor, CircuitBoard, Joystick } from 'lucide-react';
 
 export default function GamesPage() {
@@ -20,8 +21,9 @@ export default function GamesPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             {/* Image */}
             <div className="relative aspect-video rounded-lg overflow-hidden bg-void-dark">
-              <img
-                src="/master5-game.jpg"
+              <SiteImage
+                assetKey="page.games.master5"
+                fallback="/master5-game.jpg"
                 alt="Master 5 - Scheda di gioco"
                 className="w-full h-full object-cover"
               />
@@ -115,8 +117,9 @@ export default function GamesPage() {
 
             {/* Image */}
             <div className="order-1 lg:order-2 relative aspect-video rounded-lg overflow-hidden bg-void-dark">
-              <img
-                src="/super7-game.jpg"
+              <SiteImage
+                assetKey="page.games.super7"
+                fallback="/super7-game.jpg"
                 alt="Super 7 - Scheda di gioco"
                 className="w-full h-full object-cover"
               />

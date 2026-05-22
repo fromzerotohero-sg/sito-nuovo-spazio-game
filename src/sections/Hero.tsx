@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { heroConfig } from '../config';
 import SiteHeader from '../components/SiteHeader';
+import { useSiteAsset } from '../context/SiteAssetsProvider';
 
 const Hero = () => {
   if (!heroConfig.decodeText && !heroConfig.brandName && heroConfig.navItems.length === 0) {
@@ -15,6 +16,7 @@ const Hero = () => {
   const CHARS = heroConfig.decodeChars || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
   const [displayText, setDisplayText] = useState(' '.repeat(TARGET_TEXT.length));
   const [isDecoding, setIsDecoding] = useState(true);
+  const heroBackground = useSiteAsset('hero.background', heroConfig.backgroundImage);
 
   useEffect(() => {
     let iteration = 0;
@@ -73,7 +75,7 @@ const Hero = () => {
       <div className="absolute inset-0 z-0">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${heroConfig.backgroundImage})` }}
+          style={{ backgroundImage: `url(${heroBackground})` }}
         />
         <div className="absolute inset-0 video-overlay" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-void-black/30 to-void-black" />

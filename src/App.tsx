@@ -5,10 +5,12 @@ import CabinetPage from './pages/CabinetPage'
 import MonitorPage from './pages/MonitorPage'
 import AccessoriPage from './pages/AccessoriPage'
 import AssistenzaPage from './pages/AssistenzaPage'
+import AdminPage from './pages/AdminPage'
 
 export default function App() {
   return (
     <Routes>
+      <Route path="/admin" element={<AdminPage />} />
       <Route path="/" element={<Home />} />
       <Route path="/games" element={<GamesPage />} />
       <Route path="/cabinet" element={<CabinetPage />} />

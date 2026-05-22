@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link } from 'react-router';
 import { MapPin, Ticket, ExternalLink } from 'lucide-react';
 import { tourScheduleConfig, productRoutes } from '../config';
+import { useSiteAssets } from '../context/SiteAssetsProvider';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -68,7 +69,19 @@ const TourSchedule = () => {
     }
   };
 
-  const TOUR_DATES = tourScheduleConfig.tourDates;
+  const { resolve } = useSiteAssets();
+  const vinylImage = useMemo(
+    () => resolve('tour.vinyl', tourScheduleConfig.vinylImage),
+    [resolve],
+  );
+  const TOUR_DATES = useMemo(
+    () =>
+      tourScheduleConfig.tourDates.map((tour) => ({
+        ...tour,
+        image: resolve(`tour.date.${tour.id}`, tour.image),
+      })),
+    [resolve],
+  );
 
   return (
     <section
@@ -77,10 +90,10 @@ const TourSchedule = () => {
       className="relative w-full min-h-screen bg-[#9DC4FF] py-12 sm:py-20 overflow-hidden"
     >
       {/* Rotating vinyl disc */}
-      {tourScheduleConfig.vinylImage && (
+      {vinylImage && (
         <div className="hidden md:block absolute top-20 right-8 lg:right-20 w-48 h-48 lg:w-80 lg:h-80 z-10 opacity-60 lg:opacity-80 pointer-events-none">
           <img
-            src={tourScheduleConfig.vinylImage}
+            src={vinylImage}
             alt="Vinyl Disc"
             className="w-full h-full animate-spin-slow"
           />

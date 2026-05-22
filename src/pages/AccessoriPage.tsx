@@ -1,4 +1,5 @@
 import PageLayout from '../components/PageLayout';
+import SiteImage from '../components/SiteImage';
 import { Check, Lamp, Armchair, ArrowRightLeft, Columns } from 'lucide-react';
 
 export default function AccessoriPage() {
@@ -102,8 +103,9 @@ export default function AccessoriPage() {
             {/* Sgabelli */}
             <div className="rounded-lg overflow-hidden bg-void-dark border border-white/10">
               <div className="aspect-square">
-                <img
-                  src="/sgabelli.jpg"
+                <SiteImage
+                  assetKey="page.accessori.sgabelli"
+                  fallback="/sgabelli.jpg"
                   alt="Sgabelli"
                   className="w-full h-full object-cover"
                 />
@@ -117,8 +119,9 @@ export default function AccessoriPage() {
             {/* Divisori */}
             <div className="rounded-lg overflow-hidden bg-void-dark border border-white/10">
               <div className="aspect-square">
-                <img
-                  src="/accessori-divisori.jpg"
+                <SiteImage
+                  assetKey="page.accessori.divisori"
+                  fallback="/accessori-divisori.jpg"
                   alt="Divisori"
                   className="w-full h-full object-cover"
                 />
@@ -132,8 +135,9 @@ export default function AccessoriPage() {
             {/* Separè */}
             <div className="rounded-lg overflow-hidden bg-void-dark border border-white/10">
               <div className="aspect-square">
-                <img
-                  src="/separatore.jpg"
+                <SiteImage
+                  assetKey="page.accessori.separatore"
+                  fallback="/separatore.jpg"
                   alt="Separè"
                   className="w-full h-full object-cover"
                 />

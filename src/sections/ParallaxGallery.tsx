@@ -1,10 +1,11 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import { Link } from 'react-router';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Ticket, ArrowRight } from 'lucide-react';
 import { parallaxGalleryConfig, type GalleryImage, type ParallaxImage } from '../config';
 import { useIsMobile } from '../hooks/use-mobile';
+import { useSiteAssets } from '../context/SiteAssetsProvider';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -76,6 +77,24 @@ const ParallaxGallery = () => {
   }
 
   const isMobile = useIsMobile();
+  const { resolve } = useSiteAssets();
+  const gallery = useMemo(
+    () => ({
+      parallaxImagesTop: parallaxGalleryConfig.parallaxImagesTop.map((img) => ({
+        ...img,
+        src: resolve(`parallax.top.${img.id}`, img.src),
+      })),
+      parallaxImagesBottom: parallaxGalleryConfig.parallaxImagesBottom.map((img) => ({
+        ...img,
+        src: resolve(`parallax.bottom.${img.id}`, img.src),
+      })),
+      galleryImages: parallaxGalleryConfig.galleryImages.map((img) => ({
+        ...img,
+        src: resolve(`gallery.main.${img.id}`, img.src),
+      })),
+    }),
+    [resolve],
+  );
   const sectionRef = useRef<HTMLDivElement>(null);
   const parallaxContainerRef = useRef<HTMLDivElement>(null);
   const topRowRef = useRef<HTMLDivElement>(null);
@@ -173,7 +192,7 @@ const ParallaxGallery = () => {
           ref={topRowRef}
           className="flex gap-3 sm:gap-4 mb-3 sm:mb-4 pl-4 sm:pl-6 will-change-transform"
         >
-          {parallaxGalleryConfig.parallaxImagesTop.map((image) => (
+          {gallery.parallaxImagesTop.map((image) => (
             <ParallaxStripCard key={image.id} image={image} className={imageCardClass} />
           ))}
         </div>
@@ -183,7 +202,7 @@ const ParallaxGallery = () => {
           className="flex gap-3 sm:gap-4 pl-4 sm:pl-6 will-change-transform"
           style={{ transform: isMobile ? 'translateX(-40px)' : 'translateX(-150px)' }}
         >
-          {parallaxGalleryConfig.parallaxImagesBottom.map((image) => (
+          {gallery.parallaxImagesBottom.map((image) => (
             <ParallaxStripCard key={image.id} image={image} className={imageCardClass} />
           ))}
         </div>
@@ -215,7 +234,7 @@ const ParallaxGallery = () => {
             {parallaxGalleryConfig.galleryTitle}
           </h2>
           <div className="space-y-6">
-            {parallaxGalleryConfig.galleryImages.map((image) => (
+            {gallery.galleryImages.map((image) => (
               <GalleryCard key={image.id} image={image} />
             ))}
             <button
@@ -243,7 +262,7 @@ const ParallaxGallery = () => {
             ref={galleryTrackRef}
             className="flex items-center gap-8 h-full px-12 pt-24 will-change-transform"
           >
-            {parallaxGalleryConfig.galleryImages.map((image, index) => (
+            {gallery.galleryImages.map((image, index) => (
               <div
                 key={image.id}
                 className="relative"

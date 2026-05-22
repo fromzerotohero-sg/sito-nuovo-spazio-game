@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import { cn } from '../lib/utils';
 import { brandAssets } from '../config';
+import { useSiteAsset } from '../context/SiteAssetsProvider';
 
 type LogoSize = 'sm' | 'md' | 'lg';
 
@@ -21,10 +22,11 @@ export default function Logo({
   className,
   linkTo = '/',
 }: LogoProps) {
+  const logoSrc = useSiteAsset('brand.logo', brandAssets.logo);
   const image = (
     <img
-      src={brandAssets.logo}
-      srcSet={`${brandAssets.logo} 1x, ${brandAssets.logo2x} 2x`}
+      src={logoSrc}
+      srcSet={`${logoSrc} 1x, ${logoSrc} 2x`}
       alt={brandAssets.logoAlt}
       className={cn(
         'w-auto max-w-[min(78vw,300px)] object-contain object-left',

@@ -1,4 +1,5 @@
 import PageLayout from '../components/PageLayout';
+import SiteImage from '../components/SiteImage';
 import { Wrench, Cpu, Monitor, Phone, Settings, Check, Clock, Shield } from 'lucide-react';
 
 export default function AssistenzaPage() {
@@ -102,8 +103,9 @@ export default function AssistenzaPage() {
 
               <div className={`flex items-center justify-center ${index % 2 === 1 ? 'order-1 lg:order-2' : ''}`}>
                 <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-void-dark">
-                  <img
-                    src="/assistenza-tech.jpg"
+                  <SiteImage
+                    assetKey="page.assistenza.hero"
+                    fallback="/assistenza-tech.jpg"
                     alt={service.title}
                     className="w-full h-full object-cover opacity-80"
                   />

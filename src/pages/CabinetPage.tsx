@@ -1,4 +1,5 @@
 import PageLayout from '../components/PageLayout';
+import SiteImage from '../components/SiteImage';
 import { Check, Shield, Lightbulb, Box } from 'lucide-react';
 
 export default function CabinetPage() {
@@ -21,8 +22,9 @@ export default function CabinetPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Image */}
             <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-void-dark">
-              <img
-                src="/cabinet-earth.jpg"
+              <SiteImage
+                assetKey="page.cabinet.hero"
+                fallback="/cabinet-earth.jpg"
                 alt="Cabinet Earth"
                 className="w-full h-full object-cover"
               />

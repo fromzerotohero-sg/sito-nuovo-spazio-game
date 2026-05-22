@@ -1,10 +1,11 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Instagram, Twitter, Youtube, Music2, Mail, Phone, MapPin, ExternalLink } from 'lucide-react';
 import { footerConfig } from '../config';
 import Logo from '../components/Logo';
+import { useSiteAssets } from '../context/SiteAssetsProvider';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -21,6 +22,19 @@ const Footer = () => {
     return null;
   }
 
+  const { resolve } = useSiteAssets();
+  const portraitImage = useMemo(
+    () => resolve('footer.portrait', footerConfig.portraitImage),
+    [resolve],
+  );
+  const galleryImages = useMemo(
+    () =>
+      footerConfig.galleryImages.map((image) => ({
+        ...image,
+        src: resolve(`footer.gallery.${image.id}`, image.src),
+      })),
+    [resolve],
+  );
   const sectionRef = useRef<HTMLDivElement>(null);
   const portraitRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
@@ -79,7 +93,7 @@ const Footer = () => {
         >
           <div className="relative w-full max-w-xs sm:max-w-md md:max-w-2xl aspect-[2/3] mx-auto px-6 sm:px-0">
             <img
-              src={footerConfig.portraitImage}
+              src={portraitImage}
               alt={footerConfig.portraitAlt}
               className="w-full h-full object-cover"
             />
@@ -230,7 +244,7 @@ const Footer = () => {
                 Gallery
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2">
-                {footerConfig.galleryImages.map((image, index) => (
+                {galleryImages.map((image, index) => (
                   <div
                     key={image.id}
                     className="relative aspect-square overflow-hidden rounded-lg footer-grid-item cursor-pointer"
