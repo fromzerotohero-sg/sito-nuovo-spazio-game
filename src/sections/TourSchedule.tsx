@@ -4,15 +4,18 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link } from 'react-router';
 import { MapPin, Ticket, ExternalLink } from 'lucide-react';
 import { tourScheduleConfig, productRoutes } from '../config';
+import type { CmsSection } from '../cms/types';
+import { useAppPath } from '../context/EditMode';
 import { useSiteAssets } from '../context/SiteAssetsProvider';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const TourSchedule = () => {
-  // Null check: if config is empty, do not render
-  if (tourScheduleConfig.tourDates.length === 0 && !tourScheduleConfig.sectionTitle) {
-    return null;
-  }
+const TourSchedule = ({ section }: { section?: CmsSection }) => {
+  const cfg = {
+    ...tourScheduleConfig,
+    ...(section?.content as Partial<typeof tourScheduleConfig>),
+  };
+  const to = useAppPath();
 
   const sectionRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -59,24 +62,25 @@ const TourSchedule = () => {
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'on-sale':
-        return { text: tourScheduleConfig.statusLabels.onSale, color: 'text-emerald-600 bg-emerald-100' };
+        return { text: cfg.statusLabels.onSale, color: 'text-emerald-600 bg-emerald-100' };
       case 'sold-out':
-        return { text: tourScheduleConfig.statusLabels.soldOut, color: 'text-rose-600 bg-rose-100' };
+        return { text: cfg.statusLabels.soldOut, color: 'text-rose-600 bg-rose-100' };
       case 'coming-soon':
-        return { text: tourScheduleConfig.statusLabels.comingSoon, color: 'text-amber-600 bg-amber-100' };
+        return { text: cfg.statusLabels.comingSoon, color: 'text-amber-600 bg-amber-100' };
       default:
-        return { text: tourScheduleConfig.statusLabels.default, color: 'text-gray-600 bg-gray-100' };
+        return { text: cfg.statusLabels.default, color: 'text-gray-600 bg-gray-100' };
     }
   };
 
   const { resolve } = useSiteAssets();
   const vinylImage = useMemo(
-    () => resolve('tour.vinyl', tourScheduleConfig.vinylImage),
-    [resolve],
+    () =>
+      cfg.vinylImage.startsWith('http') ? cfg.vinylImage : resolve('tour.vinyl', cfg.vinylImage),
+    [resolve, cfg.vinylImage],
   );
   const TOUR_DATES = useMemo(
     () =>
-      tourScheduleConfig.tourDates.map((tour) => ({
+      cfg.tourDates.map((tour) => ({
         ...tour,
         image: resolve(`tour.date.${tour.id}`, tour.image),
       })),
@@ -105,10 +109,10 @@ const TourSchedule = () => {
         {/* Section header */}
         <div className="mb-10 sm:mb-16 pr-0 md:pr-32">
           <p className="font-mono-custom text-xs text-[#1F1F1F]/60 uppercase tracking-wider mb-2">
-            {tourScheduleConfig.sectionLabel}
+            {cfg.sectionLabel}
           </p>
           <h2 className="font-display text-3xl sm:text-5xl md:text-7xl text-[#1F1F1F] leading-tight">
-            {tourScheduleConfig.sectionTitle}
+            {cfg.sectionTitle}
           </h2>
         </div>
 
@@ -145,7 +149,7 @@ const TourSchedule = () => {
               return (
                 <Link
                   key={tour.id}
-                  to={productRoutes.assistenza}
+                  to={to(productRoutes.assistenza)}
                   className="tour-item group relative block p-4 sm:p-6 rounded-xl bg-white/50 backdrop-blur-sm border border-[#1F1F1F]/10 hover:bg-white/80 transition-all duration-300"
                   onMouseEnter={() => setActiveVenue(index)}
                   onMouseLeave={() => setActiveVenue(0)}
@@ -194,8 +198,8 @@ const TourSchedule = () => {
                         )}
                         <span>
                           {tour.status === 'on-sale'
-                            ? tourScheduleConfig.buyButtonText
-                            : tourScheduleConfig.detailsButtonText}
+                            ? cfg.buyButtonText
+                            : cfg.detailsButtonText}
                         </span>
                       </span>
                     </div>
@@ -212,13 +216,13 @@ const TourSchedule = () => {
         {/* Bottom CTA */}
         <div className="mt-12 sm:mt-20 text-center px-2">
           <p className="font-mono-custom text-sm text-[#1F1F1F]/60 mb-4">
-            {tourScheduleConfig.bottomNote}
+            {cfg.bottomNote}
           </p>
           <Link
-            to={productRoutes.assistenza}
+            to={to(productRoutes.assistenza)}
             className="inline-flex w-full sm:w-auto justify-center px-8 py-4 bg-[#1F1F1F] text-white font-display text-sm uppercase tracking-wider rounded-full hover:bg-[#1F1F1F]/80 transition-colors"
           >
-            {tourScheduleConfig.bottomCtaText}
+            {cfg.bottomCtaText}
           </Link>
         </div>
       </div>

@@ -3,13 +3,16 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router'
 import './index.css'
 import App from './App.tsx'
+import { CmsProvider } from './context/CmsProvider.tsx'
 import { SiteAssetsProvider } from './context/SiteAssetsProvider.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <SiteAssetsProvider>
-        <App />
+        <CmsProvider>
+          <App />
+        </CmsProvider>
       </SiteAssetsProvider>
     </BrowserRouter>
   </StrictMode>,

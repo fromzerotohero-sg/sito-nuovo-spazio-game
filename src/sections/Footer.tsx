@@ -4,7 +4,9 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Instagram, Twitter, Youtube, Music2, Mail, Phone, MapPin, ExternalLink } from 'lucide-react';
 import { footerConfig } from '../config';
+import type { CmsSection } from '../cms/types';
 import Logo from '../components/Logo';
+import { useAppPath } from '../context/EditMode';
 import { useSiteAssets } from '../context/SiteAssetsProvider';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -16,24 +18,28 @@ const SOCIAL_ICON_MAP = {
   music: Music2,
 };
 
-const Footer = () => {
-  // Null check: if config is empty, do not render
-  if (!footerConfig.brandName && !footerConfig.heroTitle && footerConfig.socialLinks.length === 0) {
-    return null;
-  }
+const Footer = ({ section }: { section?: CmsSection }) => {
+  const cfg = {
+    ...footerConfig,
+    ...(section?.content as Partial<typeof footerConfig>),
+  };
 
   const { resolve } = useSiteAssets();
+  const to = useAppPath();
   const portraitImage = useMemo(
-    () => resolve('footer.portrait', footerConfig.portraitImage),
-    [resolve],
+    () =>
+      cfg.portraitImage.startsWith('http')
+        ? cfg.portraitImage
+        : resolve('footer.portrait', cfg.portraitImage),
+    [resolve, cfg.portraitImage],
   );
   const galleryImages = useMemo(
     () =>
-      footerConfig.galleryImages.map((image) => ({
+      cfg.galleryImages.map((image) => ({
         ...image,
-        src: resolve(`footer.gallery.${image.id}`, image.src),
+        src: image.src.startsWith('http') ? image.src : resolve(`footer.gallery.${image.id}`, image.src),
       })),
-    [resolve],
+    [resolve, cfg.galleryImages],
   );
   const sectionRef = useRef<HTMLDivElement>(null);
   const portraitRef = useRef<HTMLDivElement>(null);
@@ -73,8 +79,8 @@ const Footer = () => {
   }, []);
 
   const handleContactClick = () => {
-    if (footerConfig.subscribeAlertMessage) {
-      alert(footerConfig.subscribeAlertMessage);
+    if (cfg.subscribeAlertMessage) {
+      alert(cfg.subscribeAlertMessage);
     }
   };
 
@@ -94,7 +100,7 @@ const Footer = () => {
           <div className="relative w-full max-w-xs sm:max-w-md md:max-w-2xl aspect-[2/3] mx-auto px-6 sm:px-0">
             <img
               src={portraitImage}
-              alt={footerConfig.portraitAlt}
+              alt={cfg.portraitAlt}
               className="w-full h-full object-cover"
             />
             {/* Gradient overlay */}
@@ -109,20 +115,20 @@ const Footer = () => {
           className="relative z-10 text-center will-change-transform"
         >
           <h2 className="font-display text-[18vw] sm:text-[15vw] text-white leading-none tracking-tighter px-2">
-            {footerConfig.heroTitle}
+            {cfg.heroTitle}
           </h2>
           <p className="font-mono-custom text-sm sm:text-lg text-neon-soft/60 uppercase tracking-[0.3em] sm:tracking-[0.5em] mt-3 sm:mt-4">
-            {footerConfig.heroSubtitle}
+            {cfg.heroSubtitle}
           </p>
         </div>
 
         {/* Artist name */}
         <div className="absolute bottom-6 left-4 right-4 sm:bottom-20 sm:left-12 sm:right-auto z-20 text-center sm:text-left">
           <p className="font-mono-custom text-xs text-white/40 uppercase tracking-wider mb-2">
-            {footerConfig.artistLabel}
+            {cfg.artistLabel}
           </p>
-          <h3 className="font-display text-2xl sm:text-4xl text-white">{footerConfig.artistName}</h3>
-          <p className="font-mono-custom text-xs sm:text-sm text-neon-soft/60">{footerConfig.artistSubtitle}</p>
+          <h3 className="font-display text-2xl sm:text-4xl text-white">{cfg.artistName}</h3>
+          <p className="font-mono-custom text-xs sm:text-sm text-neon-soft/60">{cfg.artistSubtitle}</p>
         </div>
       </div>
 
@@ -140,11 +146,11 @@ const Footer = () => {
                 <Logo size="lg" linkTo="/" className="max-w-[240px]" />
               </div>
               <p className="text-sm text-white/50 leading-relaxed mb-6">
-                {footerConfig.brandDescription}
+                {cfg.brandDescription}
               </p>
               {/* Social links */}
               <div className="flex gap-4">
-                {footerConfig.socialLinks.map((social) => {
+                {cfg.socialLinks.map((social) => {
                   const IconComponent = SOCIAL_ICON_MAP[social.icon];
                   return (
                     <a
@@ -163,13 +169,13 @@ const Footer = () => {
             {/* Quick Links */}
             <div>
               <h4 className="font-display text-sm uppercase tracking-wider text-white mb-6">
-                {footerConfig.quickLinksTitle}
+                {cfg.quickLinksTitle}
               </h4>
               <ul className="space-y-3">
-                {footerConfig.quickLinks.map((link) => (
+                {cfg.quickLinks.map((link) => (
                   <li key={link.href}>
                     <Link
-                      to={link.href}
+                      to={to(link.href)}
                       className="text-sm text-white/50 hover:text-neon-soft transition-colors flex items-center gap-2 group"
                     >
                       <span>{link.label}</span>
@@ -183,30 +189,30 @@ const Footer = () => {
             {/* Contact */}
             <div>
               <h4 className="font-display text-sm uppercase tracking-wider text-white mb-6">
-                {footerConfig.contactTitle}
+                {cfg.contactTitle}
               </h4>
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
                   <Mail className="w-4 h-4 text-neon-soft/60 mt-0.5" />
                   <div>
-                    <p className="text-sm text-white/50">{footerConfig.emailLabel}</p>
-                    <a href={`mailto:${footerConfig.email}`} className="text-sm text-white hover:text-neon-soft transition-colors">
-                      {footerConfig.email}
+                    <p className="text-sm text-white/50">{cfg.emailLabel}</p>
+                    <a href={`mailto:${cfg.email}`} className="text-sm text-white hover:text-neon-soft transition-colors">
+                      {cfg.email}
                     </a>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
                   <Phone className="w-4 h-4 text-neon-soft/60 mt-0.5" />
                   <div>
-                    <p className="text-sm text-white/50">{footerConfig.phoneLabel}</p>
-                    <span className="text-sm text-white">{footerConfig.phone}</span>
+                    <p className="text-sm text-white/50">{cfg.phoneLabel}</p>
+                    <span className="text-sm text-white">{cfg.phone}</span>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
                   <MapPin className="w-4 h-4 text-neon-soft/60 mt-0.5" />
                   <div>
-                    <p className="text-sm text-white/50">{footerConfig.addressLabel}</p>
-                    <span className="text-sm text-white">{footerConfig.address}</span>
+                    <p className="text-sm text-white/50">{cfg.addressLabel}</p>
+                    <span className="text-sm text-white">{cfg.address}</span>
                   </div>
                 </li>
               </ul>
@@ -215,10 +221,10 @@ const Footer = () => {
             {/* Newsletter */}
             <div>
               <h4 className="font-display text-sm uppercase tracking-wider text-white mb-6">
-                {footerConfig.newsletterTitle}
+                {cfg.newsletterTitle}
               </h4>
               <p className="text-sm text-white/50 mb-4">
-                {footerConfig.newsletterDescription}
+                {cfg.newsletterDescription}
               </p>
               <div className="flex flex-col sm:flex-row gap-2">
                 <input
@@ -231,14 +237,14 @@ const Footer = () => {
                   onClick={handleContactClick}
                   className="w-full sm:w-auto shrink-0 px-4 py-3 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm font-medium hover:bg-neon-cyan/30 transition-colors"
                 >
-                  {footerConfig.newsletterButtonText}
+                  {cfg.newsletterButtonText}
                 </button>
               </div>
             </div>
           </div>
 
           {/* Footer image grid */}
-          {footerConfig.galleryImages.length > 0 && (
+          {cfg.galleryImages.length > 0 && (
             <div className="mb-12">
               <p className="font-mono-custom text-xs text-white/30 uppercase tracking-wider mb-4">
                 Gallery
@@ -267,10 +273,10 @@ const Footer = () => {
           {/* Bottom bar */}
           <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-xs text-white/30 font-mono-custom">
-              {footerConfig.copyrightText}
+              {cfg.copyrightText}
             </p>
             <div className="flex flex-wrap justify-center md:justify-end gap-4 sm:gap-6">
-              {footerConfig.bottomLinks.map((link) => (
+              {cfg.bottomLinks.map((link) => (
                 <a key={link} href="#" className="text-xs text-white/30 hover:text-white/60 transition-colors">
                   {link}
                 </a>

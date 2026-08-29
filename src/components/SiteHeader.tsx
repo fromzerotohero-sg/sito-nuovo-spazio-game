@@ -1,6 +1,8 @@
 import { Link } from 'react-router';
 import { Disc, Play, Calendar, Music, ArrowLeft } from 'lucide-react';
 import { heroConfig } from '../config';
+import { useCms } from '../context/CmsProvider';
+import { useAppPath } from '../context/EditMode';
 import Logo from './Logo';
 import MobileNav from './MobileNav';
 
@@ -17,6 +19,15 @@ interface SiteHeaderProps {
 }
 
 export default function SiteHeader({ variant = 'home' }: SiteHeaderProps) {
+  const to = useAppPath();
+  const { getHero } = useCms();
+  const hero = getHero()?.content as Partial<typeof heroConfig> | undefined;
+  const navItems = hero?.navItems ?? heroConfig.navItems;
+  const ctaPrimary = hero?.ctaPrimary ?? heroConfig.ctaPrimary;
+  const ctaSecondary = hero?.ctaSecondary ?? heroConfig.ctaSecondary;
+  const ctaPrimaryTarget = hero?.ctaPrimaryTarget ?? heroConfig.ctaPrimaryTarget;
+  const ctaSecondaryTarget = hero?.ctaSecondaryTarget ?? heroConfig.ctaSecondaryTarget;
+
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -27,25 +38,25 @@ export default function SiteHeader({ variant = 'home' }: SiteHeaderProps) {
   const mobileNavLinks =
     variant === 'home'
       ? [
-          ...heroConfig.navItems.map((item) =>
+          ...navItems.map((item) =>
             item.href
-              ? { label: item.label, to: item.href }
+              ? { label: item.label, to: to(item.href) }
               : { label: item.label, onClick: () => scrollToSection(item.sectionId) }
           ),
           {
-            label: heroConfig.ctaPrimary,
-            onClick: () => scrollToSection(heroConfig.ctaPrimaryTarget),
+            label: ctaPrimary,
+            onClick: () => scrollToSection(ctaPrimaryTarget),
           },
           {
-            label: heroConfig.ctaSecondary,
-            onClick: () => scrollToSection(heroConfig.ctaSecondaryTarget),
+            label: ctaSecondary,
+            onClick: () => scrollToSection(ctaSecondaryTarget),
           },
         ]
       : [
-          { label: 'Home', to: '/' },
-          ...heroConfig.navItems
+          { label: 'Home', to: to('/') },
+          ...navItems
             .filter((item) => item.href)
-            .map((item) => ({ label: item.label, to: item.href! })),
+            .map((item) => ({ label: item.label, to: to(item.href!) })),
         ];
 
   return (
@@ -58,13 +69,13 @@ export default function SiteHeader({ variant = 'home' }: SiteHeaderProps) {
             className="hidden md:flex items-center justify-center gap-0.5 nav-pill rounded-full px-2 py-1.5 border border-white/10 min-w-0"
             aria-label="Navigazione principale"
           >
-            {heroConfig.navItems.map((item) => {
-              const Icon = ICON_MAP[item.icon];
+            {navItems.map((item) => {
+              const Icon = ICON_MAP[item.icon] ?? Disc;
               if (item.href) {
                 return (
                   <Link
                     key={item.label}
-                    to={item.href}
+                    to={to(item.href)}
                     className="flex items-center gap-1.5 px-3 py-2 text-[10px] lg:text-xs font-mono-custom uppercase tracking-wider text-white/80 hover:text-white transition-colors rounded-full hover:bg-white/5 whitespace-nowrap"
                   >
                     <Icon className="w-3.5 h-3.5 shrink-0" />
@@ -93,7 +104,7 @@ export default function SiteHeader({ variant = 'home' }: SiteHeaderProps) {
           <MobileNav links={mobileNavLinks} />
           {variant === 'page' && (
             <Link
-              to="/"
+              to={to('/')}
               className="hidden md:flex items-center gap-2 text-white/60 hover:text-white text-xs tracking-[0.2em] uppercase transition-colors"
             >
               <ArrowLeft size={14} />

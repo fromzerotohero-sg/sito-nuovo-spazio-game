@@ -7,7 +7,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import * as THREE from 'three';
 import { ArrowRight } from 'lucide-react';
 import { albumCubeConfig } from '../config';
+import type { CmsSection } from '../cms/types';
 import { useIsMobile } from '../hooks/use-mobile';
+import { useAppPath, useIsEditing } from '../context/EditMode';
 import { useSiteAssets } from '../context/SiteAssetsProvider';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -73,20 +75,30 @@ const Cube = ({ rotationProgress, href, cubeTextures }: CubeProps) => {
   );
 };
 
-const AlbumCube = () => {
-  if (albumCubeConfig.albums.length === 0 || albumCubeConfig.cubeTextures.length === 0) {
-    return null;
-  }
+const AlbumCube = ({ section }: { section?: CmsSection }) => {
+  const editing = useIsEditing();
+  const to = useAppPath();
+  const content = (section?.content ?? {}) as {
+    albums?: typeof albumCubeConfig.albums;
+    cubeTextures?: string[];
+    scrollHint?: string;
+    tapHint?: string;
+  };
+  const albums = content.albums?.length ? content.albums : albumCubeConfig.albums;
+  const rawTextures = content.cubeTextures?.length ? content.cubeTextures : albumCubeConfig.cubeTextures;
+  const scrollHint = content.scrollHint ?? albumCubeConfig.scrollHint;
+  const tapHint = content.tapHint ?? albumCubeConfig.tapHint;
 
   const isMobile = useIsMobile();
   const { resolve } = useSiteAssets();
   const cubeTextures = useMemo(
     () =>
-      albumCubeConfig.cubeTextures.map((path, index) =>
-        resolve(`album.cube.${index}`, path),
+      rawTextures.map((path, index) =>
+        path.startsWith('http') ? path : resolve(`album.cube.${index}`, path),
       ),
-    [resolve],
+    [resolve, rawTextures],
   );
+
   const sectionRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const [rotationProgress, setRotationProgress] = useState(0);
@@ -102,7 +114,7 @@ const AlbumCube = () => {
       start: 'top top',
       end: isMobile ? '+=120%' : '+=300%',
       scrub: 1,
-      pin: true,
+      pin: !editing,
       invalidateOnRefresh: true,
       onUpdate: (self) => {
         const progress = self.progress;
@@ -110,7 +122,7 @@ const AlbumCube = () => {
 
         const albumIndex = Math.min(
           Math.floor(progress * 4),
-          albumCubeConfig.albums.length - 1
+          albums.length - 1
         );
         setCurrentAlbumIndex(albumIndex);
 
@@ -132,9 +144,13 @@ const AlbumCube = () => {
       window.removeEventListener('resize', onResize);
       st.kill();
     };
-  }, [isMobile]);
+  }, [isMobile, editing, albums.length]);
 
-  const currentAlbum = albumCubeConfig.albums[currentAlbumIndex];
+  const currentAlbum = albums[currentAlbumIndex] ?? albums[0];
+
+  if (albums.length === 0 || cubeTextures.length === 0 || !currentAlbum) {
+    return null;
+  }
 
   return (
     <section
@@ -169,7 +185,7 @@ const AlbumCube = () => {
             <Cube
               key={cubeTextures.join('|')}
               rotationProgress={rotationProgress}
-              href={currentAlbum.href}
+              href={to(currentAlbum.href)}
               cubeTextures={cubeTextures}
             />
             <Environment preset="city" />
@@ -178,11 +194,11 @@ const AlbumCube = () => {
       </div>
 
       <Link
-        to={currentAlbum.href}
+        to={to(currentAlbum.href)}
         className="absolute bottom-4 left-4 right-4 sm:bottom-8 sm:left-8 sm:right-auto z-20 max-w-[calc(100vw-2rem)] group block rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/60 p-3 -m-3 hover:bg-white/5 transition-colors"
       >
         <p className="font-mono-custom text-[10px] sm:text-xs text-neon-soft/60 uppercase tracking-wider mb-1 sm:mb-2">
-          {String(currentAlbum.id).padStart(2, '0')} / {String(albumCubeConfig.albums.length).padStart(2, '0')}
+          {String(currentAlbum.id ?? currentAlbumIndex + 1).padStart(2, '0')} / {String(albums.length).padStart(2, '0')}
         </p>
         <h3 className="font-display text-3xl sm:text-5xl md:text-7xl text-white mb-1 transition-all duration-300 leading-tight group-hover:text-neon-soft">
           {currentAlbum.title}
@@ -197,10 +213,10 @@ const AlbumCube = () => {
       </Link>
 
       <div className="absolute bottom-4 right-4 sm:bottom-12 sm:right-12 z-20 flex sm:flex-col items-center sm:items-stretch gap-2 sm:gap-3">
-        {albumCubeConfig.albums.map((album, index) => (
+        {albums.map((album, index) => (
           <Link
             key={album.id}
-            to={album.href}
+            to={to(album.href)}
             aria-label={`Vai a ${album.title}`}
             className={`rounded-full transition-all duration-300 ${
               index === currentAlbumIndex
@@ -212,11 +228,11 @@ const AlbumCube = () => {
       </div>
 
       <p className="hidden sm:block absolute bottom-12 right-12 z-20 font-mono-custom text-xs text-white/40 uppercase tracking-wider text-right max-w-[140px]">
-        {albumCubeConfig.scrollHint}
-        <span className="block mt-1 text-white/25">{albumCubeConfig.tapHint}</span>
+        {scrollHint}
+        <span className="block mt-1 text-white/25">{tapHint}</span>
       </p>
       <p className="sm:hidden absolute top-20 left-0 right-0 z-20 text-center font-mono-custom text-[10px] text-white/35 uppercase tracking-wider px-4 pointer-events-none">
-        {albumCubeConfig.tapHint}
+        {tapHint}
       </p>
 
       <div className="hidden sm:block absolute top-12 left-12 w-20 h-px bg-gradient-to-r from-neon-cyan/50 to-transparent" />

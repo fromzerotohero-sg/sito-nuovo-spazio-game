@@ -1,35 +1,30 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router';
-import { Loader2, LogOut, RotateCcw, Upload } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Link, NavLink, Outlet, useLocation } from 'react-router';
+import { ExternalLink, Loader2, LogOut, Save } from 'lucide-react';
 import {
-  supabase,
   isSupabaseConfigured,
+  supabase,
   supabaseConfigError,
   SUPABASE_SETUP_HINT,
 } from '../lib/supabase';
-import {
-  resetSiteAssetToDefault,
-  uploadSiteAsset,
-  type SiteAssetRow,
-} from '../lib/siteAssets';
-import { useSiteAssets } from '../context/SiteAssetsProvider';
+import { PAGE_ORDER } from '../cms/types';
+import { useCms } from '../context/CmsProvider';
+import { EditModeProvider } from '../context/EditMode';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 
 export default function AdminPage() {
-  const { assets, refresh, resolve, ready } = useSiteAssets();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [sessionEmail, setSessionEmail] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
-  const [busyKey, setBusyKey] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    document.title = 'Admin — SpazioGame';
+    document.title = 'Modifica sito — SpazioGame';
     const meta = document.createElement('meta');
     meta.name = 'robots';
     meta.content = 'noindex, nofollow';
@@ -80,16 +75,6 @@ export default function AdminPage() {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  const grouped = useMemo(() => {
-    const map = new Map<string, SiteAssetRow[]>();
-    for (const row of assets) {
-      const list = map.get(row.section) ?? [];
-      list.push(row);
-      map.set(row.section, list);
-    }
-    return [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
-  }, [assets]);
-
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     if (!supabase) return;
@@ -104,65 +89,16 @@ export default function AdminPage() {
     setMessage(null);
   }
 
-  async function handleUpload(key: string, file: File) {
-    setBusyKey(key);
-    setMessage(null);
-    try {
-      await uploadSiteAsset(key, file);
-      await refresh();
-      setMessage(`Immagine aggiornata: ${key}`);
-    } catch (err) {
-      setMessage(err instanceof Error ? err.message : 'Errore upload');
-    } finally {
-      setBusyKey(null);
-    }
-  }
-
-  async function handleReset(key: string) {
-    setBusyKey(key);
-    setMessage(null);
-    try {
-      await resetSiteAssetToDefault(key);
-      await refresh();
-      setMessage(`Ripristinata immagine predefinita: ${key}`);
-    } catch (err) {
-      setMessage(err instanceof Error ? err.message : 'Errore ripristino');
-    } finally {
-      setBusyKey(null);
-    }
-  }
-
   if (!isSupabaseConfigured) {
     const swappedKeyInUrl = supabaseConfigError === 'url_is_api_key';
     return (
       <div className="min-h-screen bg-void-black text-white p-8 max-w-2xl">
-        <h1 className="text-2xl font-display mb-4">Configurazione Supabase</h1>
+        <h1 className="text-2xl font-display mb-4">Configurazione</h1>
         {swappedKeyInUrl ? (
-          <>
-            <p className="text-red-400/90 text-sm mb-4">
-              Su Vercel la chiave <strong>publishable</strong> è stata messa in{' '}
-              <code className="text-neon-cyan">{SUPABASE_SETUP_HINT.urlName}</code> invece che nell&apos;URL del
-              progetto. Per questo vedi <code className="text-white/70">ERR_NAME_NOT_RESOLVED</code>.
-            </p>
-            <p className="text-white/60 text-sm mb-4">Imposta così (Settings → Environment Variables):</p>
-            <ul className="text-sm font-mono space-y-2 mb-6 text-white/80">
-              <li>
-                <span className="text-neon-cyan">{SUPABASE_SETUP_HINT.urlName}</span>
-                <br />
-                <span className="text-white/50">{SUPABASE_SETUP_HINT.url}</span>
-              </li>
-              <li>
-                <span className="text-neon-cyan">{SUPABASE_SETUP_HINT.keyName}</span>
-                <br />
-                <span className="text-white/50">sb_publishable_… (chiave anon da Supabase → API)</span>
-              </li>
-            </ul>
-            <p className="text-white/40 text-xs">Poi Redeploy su Vercel.</p>
-          </>
+          <p className="text-red-400/90 text-sm">Le chiavi ambiente su Vercel sono invertite.</p>
         ) : (
-          <p className="text-white/60 max-w-lg">
-            Supabase non configurato. Aggiungi <code className="text-neon-cyan">{SUPABASE_SETUP_HINT.urlName}</code>{' '}
-            e <code className="text-neon-cyan">{SUPABASE_SETUP_HINT.keyName}</code> su Vercel.
+          <p className="text-white/60">
+            Aggiungi {SUPABASE_SETUP_HINT.urlName} e {SUPABASE_SETUP_HINT.keyName} su Vercel.
           </p>
         )}
         <Link to="/" className="inline-block mt-6 text-neon-cyan hover:underline">
@@ -172,7 +108,7 @@ export default function AdminPage() {
     );
   }
 
-  if (authLoading || !ready) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-void-black flex items-center justify-center text-white/60">
         <Loader2 className="animate-spin mr-2" size={20} />
@@ -185,10 +121,8 @@ export default function AdminPage() {
     return (
       <div className="min-h-screen bg-void-black text-white flex flex-col items-center justify-center p-6">
         <div className="w-full max-w-md border border-white/10 rounded-xl p-8 bg-void-dark/80">
-          <h1 className="text-2xl font-display mb-2">Admin SpazioGame</h1>
-          <p className="text-white/50 text-sm mb-6">
-            Accedi con l&apos;utente creato in Supabase → Authentication → Users.
-          </p>
+          <h1 className="text-2xl font-display mb-2">Modifica il sito</h1>
+          <p className="text-white/50 text-sm mb-6">Accedi per cambiare testi, foto e layout.</p>
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <Label htmlFor="email" className="text-white/70">
@@ -235,138 +169,112 @@ export default function AdminPage() {
     return (
       <div className="min-h-screen bg-void-black text-white p-8 max-w-xl mx-auto">
         <h1 className="text-2xl font-display mb-4">Accesso negato</h1>
-        <p className="text-white/60 text-sm leading-relaxed mb-4">
-          L&apos;account <strong className="text-white">{sessionEmail}</strong> è autenticato ma non è
-          ancora abilitato come amministratore.
+        <p className="text-white/60 text-sm mb-6">
+          L&apos;account {sessionEmail} non è ancora abilitato come amministratore.
         </p>
-        <p className="text-white/50 text-sm leading-relaxed mb-6">
-          In Supabase → SQL Editor esegui (sostituisci l&apos;email):
-        </p>
-        <pre className="text-xs bg-void-dark border border-white/10 rounded-lg p-4 overflow-x-auto text-neon-cyan/90 mb-6">
-{`insert into public.site_admins (user_id)
-select id from auth.users
-where email = 'tua-email@dominio.it'
-on conflict (user_id) do nothing;`}
-        </pre>
-        <p className="text-[11px] text-white/30 font-mono break-all mb-6">user_id: {userId}</p>
-        <div className="flex gap-3">
-          <Button type="button" variant="outline" className="border-white/20" onClick={() => void handleLogout()}>
-            Esci
-          </Button>
-          <Link to="/" className="text-sm text-neon-cyan hover:underline self-center">
-            ← Sito
-          </Link>
-        </div>
+        <Button type="button" variant="outline" className="border-white/20" onClick={() => void handleLogout()}>
+          Esci
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-void-black text-white">
-      <header className="sticky top-0 z-10 border-b border-white/10 bg-void-black/95 backdrop-blur px-4 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-display">Gestione immagini</h1>
-          <p className="text-white/40 text-xs mt-1">{sessionEmail}</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link to="/" className="text-sm text-white/50 hover:text-neon-cyan">
-            Vedi sito
-          </Link>
+    <EditModeProvider enabled>
+      <AdminShell email={sessionEmail} onLogout={() => void handleLogout()}>
+        <Outlet />
+      </AdminShell>
+    </EditModeProvider>
+  );
+}
+
+function AdminShell({
+  email,
+  onLogout,
+  children,
+}: {
+  email: string;
+  onLogout: () => void;
+  children: React.ReactNode;
+}) {
+  const { dirty, saving, save, seedIfNeeded } = useCms();
+  const location = useLocation();
+  const [saveMsg, setSaveMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    void seedIfNeeded();
+  }, [seedIfNeeded]);
+
+  useEffect(() => {
+    document.body.classList.add('cms-editing');
+    return () => document.body.classList.remove('cms-editing');
+  }, []);
+
+  const publicPath = location.pathname.replace(/^\/admin/, '') || '/';
+
+  async function handleSave() {
+    setSaveMsg(null);
+    try {
+      await save();
+      setSaveMsg('Salvato');
+      setTimeout(() => setSaveMsg(null), 2000);
+    } catch (err) {
+      setSaveMsg(err instanceof Error ? err.message : 'Errore nel salvataggio');
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-void-black">
+      <div className="fixed top-0 left-0 right-0 z-[200] h-14 border-b border-white/10 bg-void-black/95 backdrop-blur flex items-center gap-3 px-3 sm:px-4">
+        <span className="hidden sm:block text-xs uppercase tracking-wider text-neon-cyan shrink-0">
+          Modifica
+        </span>
+        <nav className="flex-1 flex items-center gap-1 overflow-x-auto">
+          {PAGE_ORDER.map((page) => {
+            const to = page.path === '/' ? '/admin' : `/admin${page.path}`;
+            return (
+              <NavLink
+                key={page.slug}
+                to={to}
+                end={page.path === '/'}
+                className={({ isActive }) =>
+                  `px-3 py-1.5 rounded-full text-xs uppercase tracking-wider whitespace-nowrap ${
+                    isActive ? 'bg-neon-cyan text-void-black' : 'text-white/60 hover:text-white hover:bg-white/5'
+                  }`
+                }
+              >
+                {page.title}
+              </NavLink>
+            );
+          })}
+        </nav>
+        <div className="flex items-center gap-2 shrink-0">
+          {saveMsg && <span className="text-[11px] text-neon-cyan hidden sm:inline">{saveMsg}</span>}
           <Button
             type="button"
-            variant="outline"
             size="sm"
-            className="border-white/20"
-            onClick={() => void handleLogout()}
+            className="bg-neon-cyan text-void-black hover:bg-white"
+            disabled={saving || !dirty}
+            onClick={() => void handleSave()}
           >
-            <LogOut size={14} className="mr-1" />
-            Esci
+            {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+            Salva
           </Button>
+          <a
+            href={publicPath}
+            className="hidden sm:inline-flex items-center gap-1 text-xs text-white/50 hover:text-white"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <ExternalLink size={12} />
+            Vedi sito
+          </a>
+          <button type="button" className="text-white/40 hover:text-white p-1" title={`Esci (${email})`} onClick={onLogout}>
+            <LogOut size={14} />
+          </button>
         </div>
-      </header>
-
-      <main className="p-4 sm:p-8 max-w-6xl mx-auto">
-        {message && (
-          <p className="mb-6 text-sm text-neon-cyan border border-neon-cyan/30 rounded-lg px-4 py-2 bg-neon-cyan/5">
-            {message}
-          </p>
-        )}
-        <p className="text-white/50 text-sm mb-8 max-w-2xl">
-          Carica una nuova immagine per ogni slot. Il sito pubblico userà subito la versione su Supabase
-          Storage (senza ridistribuire su Vercel). &quot;Ripristina&quot; torna al file in{' '}
-          <code className="text-white/70">public/</code>.
-        </p>
-
-        {grouped.map(([section, rows]) => (
-          <section key={section} className="mb-12">
-            <h2 className="text-lg font-display text-neon-cyan mb-4 uppercase tracking-wider">{section}</h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {rows.map((row) => {
-                const preview = resolve(row.key, row.default_path);
-                const isCustom = Boolean(row.storage_path);
-                const busy = busyKey === row.key;
-                return (
-                  <article
-                    key={row.key}
-                    className="border border-white/10 rounded-lg overflow-hidden bg-void-dark/50"
-                  >
-                    <div className="aspect-video bg-void-black relative">
-                      <img src={preview} alt={row.label} className="w-full h-full object-cover" />
-                      {isCustom && (
-                        <span className="absolute top-2 right-2 text-[10px] uppercase tracking-wider bg-neon-cyan text-void-black px-2 py-0.5 rounded">
-                          Supabase
-                        </span>
-                      )}
-                    </div>
-                    <div className="p-3 space-y-2">
-                      <p className="font-medium text-sm">{row.label}</p>
-                      <p className="text-[10px] text-white/30 font-mono break-all">{row.key}</p>
-                      <div className="flex flex-wrap gap-2">
-                        <label
-                          className={`inline-flex items-center justify-center gap-1 h-8 px-3 text-sm rounded-md font-medium bg-neon-cyan text-void-black hover:bg-white cursor-pointer ${
-                            busy ? 'opacity-50 pointer-events-none' : ''
-                          }`}
-                        >
-                          <input
-                            type="file"
-                            accept="image/jpeg,image/png,image/webp,image/gif"
-                            className="sr-only"
-                            disabled={busy}
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) void handleUpload(row.key, file);
-                              e.target.value = '';
-                            }}
-                          />
-                          {busy ? (
-                            <Loader2 size={14} className="animate-spin" />
-                          ) : (
-                            <Upload size={14} />
-                          )}
-                          Carica
-                        </label>
-                        {isCustom && (
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="outline"
-                            className="border-white/20"
-                            disabled={busy}
-                            onClick={() => void handleReset(row.key)}
-                          >
-                            <RotateCcw size={14} className="mr-1" />
-                            Ripristina
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          </section>
-        ))}
-      </main>
+      </div>
+      <div className="pt-14">{children}</div>
     </div>
   );
 }

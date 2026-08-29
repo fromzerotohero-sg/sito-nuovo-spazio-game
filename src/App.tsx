@@ -1,22 +1,24 @@
 import { Routes, Route } from 'react-router'
-import Home from './pages/Home'
-import GamesPage from './pages/GamesPage'
-import CabinetPage from './pages/CabinetPage'
-import MonitorPage from './pages/MonitorPage'
-import AccessoriPage from './pages/AccessoriPage'
-import AssistenzaPage from './pages/AssistenzaPage'
+import CmsPage from './components/cms/CmsPage'
 import AdminPage from './pages/AdminPage'
 
 export default function App() {
   return (
     <Routes>
-      <Route path="/admin" element={<AdminPage />} />
-      <Route path="/" element={<Home />} />
-      <Route path="/games" element={<GamesPage />} />
-      <Route path="/cabinet" element={<CabinetPage />} />
-      <Route path="/monitor" element={<MonitorPage />} />
-      <Route path="/accessori" element={<AccessoriPage />} />
-      <Route path="/assistenza" element={<AssistenzaPage />} />
+      <Route path="/admin" element={<AdminPage />}>
+        <Route index element={<CmsPage slug="home" />} />
+        <Route path="games" element={<CmsPage slug="games" />} />
+        <Route path="cabinet" element={<CmsPage slug="cabinet" />} />
+        <Route path="monitor" element={<CmsPage slug="monitor" />} />
+        <Route path="accessori" element={<CmsPage slug="accessori" />} />
+        <Route path="assistenza" element={<CmsPage slug="assistenza" />} />
+      </Route>
+      <Route path="/" element={<CmsPage slug="home" />} />
+      <Route path="/games" element={<CmsPage slug="games" />} />
+      <Route path="/cabinet" element={<CmsPage slug="cabinet" />} />
+      <Route path="/monitor" element={<CmsPage slug="monitor" />} />
+      <Route path="/accessori" element={<CmsPage slug="accessori" />} />
+      <Route path="/assistenza" element={<CmsPage slug="assistenza" />} />
     </Routes>
   )
 }

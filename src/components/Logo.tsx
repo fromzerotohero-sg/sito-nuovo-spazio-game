@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import { cn } from '../lib/utils';
 import { brandAssets } from '../config';
+import { useAppPath } from '../context/EditMode';
 import { useSiteAsset } from '../context/SiteAssetsProvider';
 
 type LogoSize = 'sm' | 'md' | 'lg';
@@ -22,7 +23,9 @@ export default function Logo({
   className,
   linkTo = '/',
 }: LogoProps) {
+  const to = useAppPath();
   const logoSrc = useSiteAsset('brand.logo', brandAssets.logo);
+  const href = linkTo ? to(linkTo) : null;
   const image = (
     <img
       src={logoSrc}
@@ -38,10 +41,10 @@ export default function Logo({
     />
   );
 
-  if (linkTo) {
+  if (href) {
     return (
       <Link
-        to={linkTo}
+        to={href}
         className="inline-flex shrink-0 items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/60 rounded-sm"
         aria-label={brandAssets.logoAlt}
       >

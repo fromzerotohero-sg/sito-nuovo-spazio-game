@@ -4,12 +4,15 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Ticket, ArrowRight } from 'lucide-react';
 import { parallaxGalleryConfig, type GalleryImage, type ParallaxImage } from '../config';
+import type { CmsSection } from '../cms/types';
 import { useIsMobile } from '../hooks/use-mobile';
+import { useAppPath } from '../context/EditMode';
 import { useSiteAssets } from '../context/SiteAssetsProvider';
 
 gsap.registerPlugin(ScrollTrigger);
 
 function ParallaxStripCard({ image, className }: { image: ParallaxImage; className: string }) {
+  const to = useAppPath();
   const inner = (
     <>
       <img src={image.src} alt={image.alt} className="w-full h-full object-cover" loading="lazy" />
@@ -23,7 +26,7 @@ function ParallaxStripCard({ image, className }: { image: ParallaxImage; classNa
 
   if (image.href) {
     return (
-      <Link to={image.href} className={`${className} group block`}>
+      <Link to={to(image.href)} className={`${className} group block`}>
         {inner}
       </Link>
     );
@@ -41,9 +44,10 @@ function GalleryCard({
   className?: string;
   style?: React.CSSProperties;
 }) {
+  const to = useAppPath();
   return (
     <Link
-      to={image.href}
+      to={to(image.href)}
       className={`relative flex-shrink-0 group cursor-pointer block ${className ?? ''}`}
       style={style}
     >
@@ -67,33 +71,30 @@ function GalleryCard({
   );
 }
 
-const ParallaxGallery = () => {
-  if (
-    parallaxGalleryConfig.parallaxImagesTop.length === 0 &&
-    parallaxGalleryConfig.galleryImages.length === 0 &&
-    !parallaxGalleryConfig.sectionTitle
-  ) {
-    return null;
-  }
+const ParallaxGallery = ({ section }: { section?: CmsSection }) => {
+  const cfg = {
+    ...parallaxGalleryConfig,
+    ...(section?.content as Partial<typeof parallaxGalleryConfig>),
+  };
 
   const isMobile = useIsMobile();
   const { resolve } = useSiteAssets();
   const gallery = useMemo(
     () => ({
-      parallaxImagesTop: parallaxGalleryConfig.parallaxImagesTop.map((img) => ({
+      parallaxImagesTop: (cfg.parallaxImagesTop ?? []).map((img) => ({
         ...img,
-        src: resolve(`parallax.top.${img.id}`, img.src),
+        src: img.src.startsWith('http') ? img.src : resolve(`parallax.top.${img.id}`, img.src),
       })),
-      parallaxImagesBottom: parallaxGalleryConfig.parallaxImagesBottom.map((img) => ({
+      parallaxImagesBottom: (cfg.parallaxImagesBottom ?? []).map((img) => ({
         ...img,
-        src: resolve(`parallax.bottom.${img.id}`, img.src),
+        src: img.src.startsWith('http') ? img.src : resolve(`parallax.bottom.${img.id}`, img.src),
       })),
-      galleryImages: parallaxGalleryConfig.galleryImages.map((img) => ({
+      galleryImages: (cfg.galleryImages ?? []).map((img) => ({
         ...img,
-        src: resolve(`gallery.main.${img.id}`, img.src),
+        src: img.src.startsWith('http') ? img.src : resolve(`gallery.main.${img.id}`, img.src),
       })),
     }),
-    [resolve],
+    [resolve, cfg.parallaxImagesTop, cfg.parallaxImagesBottom, cfg.galleryImages],
   );
   const sectionRef = useRef<HTMLDivElement>(null);
   const parallaxContainerRef = useRef<HTMLDivElement>(null);
@@ -181,10 +182,10 @@ const ParallaxGallery = () => {
       <div ref={parallaxContainerRef} className="relative py-12 sm:py-20 overflow-hidden">
         <div className="px-4 sm:px-6 md:px-12 mb-8 sm:mb-12">
           <p className="font-mono-custom text-xs text-neon-soft/60 uppercase tracking-wider mb-2">
-            {parallaxGalleryConfig.sectionLabel}
+            {cfg.sectionLabel}
           </p>
           <h2 className="font-display text-2xl sm:text-4xl md:text-5xl text-white leading-tight">
-            {parallaxGalleryConfig.sectionTitle}
+            {cfg.sectionTitle}
           </h2>
         </div>
 
@@ -215,7 +216,7 @@ const ParallaxGallery = () => {
               key={i}
               className="flex items-center gap-4 sm:gap-8 mx-4 sm:mx-8 text-lg sm:text-2xl font-display text-white/20"
             >
-              {parallaxGalleryConfig.marqueeTexts.map((text, j) => (
+              {cfg.marqueeTexts.map((text, j) => (
                 <span key={j}>{text}</span>
               ))}
               <Ticket className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
@@ -228,10 +229,10 @@ const ParallaxGallery = () => {
       {isMobile ? (
         <div className="py-12 px-4 sm:px-6">
           <p className="font-mono-custom text-xs text-neon-soft/60 uppercase tracking-wider mb-2">
-            {parallaxGalleryConfig.galleryLabel}
+            {cfg.galleryLabel}
           </p>
           <h2 className="font-display text-2xl sm:text-4xl text-white mb-8">
-            {parallaxGalleryConfig.galleryTitle}
+            {cfg.galleryTitle}
           </h2>
           <div className="space-y-6">
             {gallery.galleryImages.map((image) => (
@@ -242,7 +243,7 @@ const ParallaxGallery = () => {
               onClick={scrollToTour}
               className="w-full flex items-center justify-center gap-3 py-4 border border-white/20 rounded-xl text-white font-display text-sm uppercase tracking-wider hover:border-neon-cyan hover:text-neon-cyan transition-colors"
             >
-              {parallaxGalleryConfig.endCtaText}
+              {cfg.endCtaText}
               <ArrowRight className="w-5 h-5" />
             </button>
           </div>
@@ -251,10 +252,10 @@ const ParallaxGallery = () => {
         <div ref={galleryRef} className="relative h-screen overflow-hidden">
           <div className="absolute top-12 left-12 z-20">
             <p className="font-mono-custom text-xs text-neon-soft/60 uppercase tracking-wider mb-2">
-              {parallaxGalleryConfig.galleryLabel}
+              {cfg.galleryLabel}
             </p>
             <h2 className="font-display text-4xl md:text-5xl text-white">
-              {parallaxGalleryConfig.galleryTitle}
+              {cfg.galleryTitle}
             </h2>
           </div>
 
@@ -285,7 +286,7 @@ const ParallaxGallery = () => {
                   <ArrowRight className="w-8 h-8 group-hover:translate-x-1 transition-transform" />
                 </div>
                 <span className="font-display text-lg uppercase tracking-wider">
-                  {parallaxGalleryConfig.endCtaText}
+                  {cfg.endCtaText}
                 </span>
               </button>
             </div>
