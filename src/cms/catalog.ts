@@ -66,7 +66,7 @@ export const ADDABLE_SECTIONS: AddableSection[] = [
     type: 'provider_groups',
     label: 'Giochi per marchio',
     hint: 'Logo del provider e giochi in riga',
-    layout: { columns: 4, imageFit: 'contain' },
+    layout: { columns: 2, imageFit: 'contain' },
     content: {
       title: 'Giochi per marchio',
       items: [

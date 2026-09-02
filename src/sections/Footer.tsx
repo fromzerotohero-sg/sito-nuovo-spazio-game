@@ -155,7 +155,7 @@ const Footer = ({ section }: { section?: CmsSection }) => {
                 {cfg.brandDescription}
               </p>
               {(isoLogo || editing) && section?.id ? (
-                <div className="mb-6 h-16 w-36">
+                <div className="mb-6 h-40 w-72 max-w-full">
                   <EditableImage
                     src={isoLogo || '/favicon.png'}
                     alt="ISO 9001"
@@ -171,9 +171,9 @@ const Footer = ({ section }: { section?: CmsSection }) => {
                   href={isoHref || undefined}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mb-6 inline-block h-16"
+                  className="mb-6 inline-block h-40 max-w-full"
                 >
-                  <img src={isoLogo} alt="ISO 9001" className="h-16 w-auto object-contain" />
+                  <img src={isoLogo} alt="ISO 9001" className="h-40 w-auto max-w-[18rem] object-contain" />
                 </a>
               ) : null}
               {/* Social links */}

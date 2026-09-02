@@ -56,7 +56,7 @@ export default function SiteFooter() {
             ) : (
               <p className="mt-4 text-white/40 text-sm max-w-md leading-relaxed">{brandDescription}</p>
             )}
-            <div className="mt-6 w-36 h-20">
+            <div className="mt-6 w-72 h-40 max-w-full">
               {isoLogo || editing ? (
                 <EditableImage
                   src={isoLogo || '/favicon.png'}

@@ -178,7 +178,7 @@ function HomeImagesEditor({ section }: { section: CmsSection }) {
             onChange={(brandDescription) => patchContent(section.id, { brandDescription })}
           />
           <p className="text-xs text-white/40 mt-4 mb-2">Logo ISO 9001 (cliccabile)</p>
-          <div className="h-20 w-36">
+          <div className="h-40 w-72 max-w-full">
             <EditableImage
               src={(section.content.isoLogo as string) || '/favicon.png'}
               alt="ISO 9001"

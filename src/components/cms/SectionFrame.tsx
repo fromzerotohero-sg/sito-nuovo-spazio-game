@@ -20,6 +20,14 @@ export default function SectionFrame({
 
   const canColumns =
     section.type === 'feature_grid' || section.type === 'image_cards' || section.type === 'provider_groups';
+  const columnOptions: Array<2 | 3 | 4> =
+    section.type === 'provider_groups' ? [2, 3] : [2, 3, 4];
+  const activeColumns =
+    section.type === 'provider_groups'
+      ? section.layout.columns === 3
+        ? 3
+        : 2
+      : (section.layout.columns ?? 3);
   const canFlip = section.type === 'split';
   const canFit =
     section.type === 'split' ||
@@ -93,14 +101,14 @@ export default function SectionFrame({
         {canColumns && (
           <span className="inline-flex items-center gap-1">
             <Columns3 size={14} />
-            {[2, 3, 4].map((n) => (
+            {columnOptions.map((n) => (
               <button
                 key={n}
                 type="button"
                 className={`px-2 py-0.5 rounded ${
-                  (section.layout.columns ?? 3) === n ? 'bg-neon-cyan text-void-black' : 'hover:bg-white/10'
+                  activeColumns === n ? 'bg-neon-cyan text-void-black' : 'hover:bg-white/10'
                 }`}
-                onClick={() => patchLayout(section.id, { columns: n as 2 | 3 | 4 })}
+                onClick={() => patchLayout(section.id, { columns: n })}
               >
                 {n}
               </button>

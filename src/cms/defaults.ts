@@ -211,7 +211,7 @@ export const DEFAULT_SECTIONS: CmsSection[] = [
     label: 'Giochi per marchio',
     sort_order: 3,
     visible: true,
-    layout: { columns: 4, imageFit: 'contain' },
+    layout: { columns: 2, imageFit: 'contain' },
     content: {
       title: 'Giochi per marchio',
       items: [

@@ -16,9 +16,13 @@ export default function ProviderGroupsSection({ section }: { section: CmsSection
   const editing = useIsEditing();
   const title = typeof section.content.title === 'string' ? section.content.title : '';
   const items = asArray<ProviderGroup>(section.content.items);
-  const cols = section.layout.columns ?? 4;
+  const cols = section.layout.columns === 3 ? 3 : 2;
   const colClass =
-    cols === 2 ? 'sm:grid-cols-2' : cols === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2 lg:grid-cols-4';
+    cols === 3
+      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+      : cols === 4
+        ? 'grid-cols-2 lg:grid-cols-4'
+        : 'grid-cols-1 sm:grid-cols-2';
 
   function updateItems(next: ProviderGroup[]) {
     patchContent(section.id, { items: next });
@@ -37,9 +41,9 @@ export default function ProviderGroupsSection({ section }: { section: CmsSection
         ) : null}
 
         {items.map((provider, pi) => (
-          <div key={`${provider.name}-${pi}`} className="space-y-6">
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="h-16 w-40 bg-white/5 rounded-lg border border-white/10 p-2">
+          <div key={`${provider.name}-${pi}`} className="space-y-8">
+            <div className="flex flex-wrap items-end gap-4">
+              <div className="h-40 w-72 max-w-full bg-white/5 rounded-lg border border-white/10 p-3">
                 <EditableImage
                   src={provider.logo || '/games-scheda.jpg'}
                   alt={provider.name}
@@ -86,10 +90,10 @@ export default function ProviderGroupsSection({ section }: { section: CmsSection
               )}
             </div>
 
-            <div className={`grid grid-cols-2 ${colClass} gap-4`}>
+            <div className={`grid ${colClass} gap-6`}>
               {(provider.games ?? []).map((game, gi) => (
                 <div key={`${game.title}-${gi}`} className="rounded-lg border border-white/10 bg-void-dark overflow-hidden">
-                  <div className="aspect-video bg-void-black flex items-center justify-center p-2">
+                  <div className="aspect-video bg-void-black flex items-center justify-center p-3">
                     <EditableImage
                       src={game.image || '/games-scheda.jpg'}
                       alt={game.title}
