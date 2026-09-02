@@ -2,6 +2,34 @@ import { SITE_IMAGES_BUCKET, supabase } from '../lib/supabase';
 import { DEFAULT_PAGES, DEFAULT_SECTIONS } from './defaults';
 import type { CmsPage, CmsSection } from './types';
 
+function ensureDefaultBlocks(sections: CmsSection[]): CmsSection[] {
+  if (sections.some((s) => s.page_slug === 'games' && s.type === 'provider_groups')) {
+    return sections;
+  }
+  const template = DEFAULT_SECTIONS.find((s) => s.page_slug === 'games' && s.type === 'provider_groups');
+  if (!template) return sections;
+
+  const games = sections
+    .filter((s) => s.page_slug === 'games')
+    .sort((a, b) => a.sort_order - b.sort_order);
+  const cta = games.find((s) => s.type === 'cta');
+  const insertOrder = cta ? cta.sort_order : games.length;
+  const injected: CmsSection = {
+    ...JSON.parse(JSON.stringify(template)),
+    id: crypto.randomUUID(),
+    sort_order: insertOrder,
+  };
+
+  return [
+    ...sections.map((s) =>
+      s.page_slug === 'games' && s.sort_order >= insertOrder
+        ? { ...s, sort_order: s.sort_order + 1 }
+        : s,
+    ),
+    injected,
+  ];
+}
+
 export async function fetchCms(): Promise<{ pages: CmsPage[]; sections: CmsSection[] }> {
   if (!supabase) {
     return { pages: DEFAULT_PAGES, sections: DEFAULT_SECTIONS };
@@ -22,7 +50,7 @@ export async function fetchCms(): Promise<{ pages: CmsPage[]; sections: CmsSecti
 
   return {
     pages: pages as CmsPage[],
-    sections: sections as CmsSection[],
+    sections: ensureDefaultBlocks(sections as CmsSection[]),
   };
 }
 

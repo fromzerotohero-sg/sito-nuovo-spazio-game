@@ -41,6 +41,7 @@ function SplitBody({
 }) {
   const editing = useIsEditing();
   const imageFirst = layout.imageSide !== 'right';
+  const fit = layout.imageFit === 'cover' ? 'cover' : content.imageFit === 'cover' ? 'cover' : 'contain';
   const ratio =
     layout.imageRatio === 'portrait'
       ? 'aspect-[3/4]'
@@ -49,12 +50,15 @@ function SplitBody({
         : 'aspect-video';
 
   const imageCol = (
-    <div className={`relative ${ratio} rounded-lg overflow-hidden bg-void-dark`}>
+    <div className={`relative ${ratio} rounded-lg overflow-hidden bg-void-dark flex items-center justify-center`}>
       <EditableImage
         src={content.image || '/hero-sede.jpg'}
         alt={content.imageAlt || content.title || ''}
-        className="w-full h-full object-cover"
+        fit={fit}
+        className="w-full h-full"
+        href={content.imageHref}
         onChange={(image) => onChange({ ...content, image })}
+        onHrefChange={(imageHref) => onChange({ ...content, imageHref })}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-void-black/70 via-transparent to-transparent pointer-events-none" />
       {(content.eyebrow || content.title) && (
@@ -347,7 +351,11 @@ export function SplitListSection({ section }: { section: CmsSection }) {
             )}
             <SplitBody
               content={item}
-              layout={{ imageSide: index % 2 === 1 ? 'right' : 'left', imageRatio: 'video' }}
+              layout={{
+                imageSide: index % 2 === 1 ? 'right' : 'left',
+                imageRatio: section.layout.imageRatio ?? 'video',
+                imageFit: section.layout.imageFit,
+              }}
               onChange={(next) => {
                 const copy = [...items];
                 copy[index] = next;
@@ -478,9 +486,10 @@ export function ImageCardsSection({ section }: { section: CmsSection }) {
   const { patchContent } = useCms();
   const editing = useIsEditing();
   const title = asString(section.content.title);
-  const items = asArray<{ image: string; title: string; desc: string }>(section.content.items);
+  const items = asArray<{ image: string; title: string; desc: string; href?: string }>(section.content.items);
   const cols = section.layout.columns ?? 3;
   const colClass = cols === 2 ? 'md:grid-cols-2' : cols === 4 ? 'md:grid-cols-4' : 'md:grid-cols-3';
+  const fit = section.layout.imageFit === 'cover' ? 'cover' : 'contain';
 
   return (
     <section className="px-4 sm:px-6 lg:px-12 py-16 border-t border-white/10">
@@ -505,14 +514,21 @@ export function ImageCardsSection({ section }: { section: CmsSection }) {
                   Rimuovi
                 </button>
               )}
-              <div className="aspect-square">
+              <div className="aspect-square bg-void-black flex items-center justify-center p-2">
                 <EditableImage
                   src={item.image}
                   alt={item.title}
-                  className="w-full h-full object-cover"
+                  fit={fit}
+                  className="w-full h-full"
+                  href={item.href}
                   onChange={(image) => {
                     const copy = [...items];
                     copy[i] = { ...copy[i], image };
+                    patchContent(section.id, { items: copy });
+                  }}
+                  onHrefChange={(href) => {
+                    const copy = [...items];
+                    copy[i] = { ...copy[i], href };
                     patchContent(section.id, { items: copy });
                   }}
                 />
@@ -549,7 +565,7 @@ export function ImageCardsSection({ section }: { section: CmsSection }) {
             className="mt-6 text-sm text-neon-cyan"
             onClick={() =>
               patchContent(section.id, {
-                items: [...items, { image: '/hero-sede.jpg', title: 'Nuova foto', desc: 'Descrizione' }],
+                items: [...items, { image: '/hero-sede.jpg', title: 'Nuova foto', desc: 'Descrizione', href: '' }],
               })
             }
           >

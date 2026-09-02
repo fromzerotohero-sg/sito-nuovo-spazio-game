@@ -131,6 +131,8 @@ export const DEFAULT_SECTIONS: CmsSection[] = [
       bottomLinks: footerConfig.bottomLinks,
       socialLinks: footerConfig.socialLinks,
       galleryImages: footerConfig.galleryImages,
+      isoLogo: '',
+      isoHref: '',
     },
   },
 
@@ -153,7 +155,7 @@ export const DEFAULT_SECTIONS: CmsSection[] = [
     label: 'Master 5',
     sort_order: 1,
     visible: true,
-    layout: { imageSide: 'left', imageRatio: 'video' },
+    layout: { imageSide: 'left', imageRatio: 'video', imageFit: 'contain' },
     content: {
       eyebrow: 'Scheda Comma 6a',
       title: 'Master 5',
@@ -185,7 +187,7 @@ export const DEFAULT_SECTIONS: CmsSection[] = [
     label: 'Super 7',
     sort_order: 2,
     visible: true,
-    layout: { imageSide: 'right', imageRatio: 'video' },
+    layout: { imageSide: 'right', imageRatio: 'video', imageFit: 'contain' },
     content: {
       eyebrow: 'Scheda Comma 6a',
       title: 'Super 7',
@@ -203,11 +205,44 @@ export const DEFAULT_SECTIONS: CmsSection[] = [
     },
   },
   {
+    id: sid(14),
+    page_slug: 'games',
+    type: 'provider_groups',
+    label: 'Giochi per marchio',
+    sort_order: 3,
+    visible: true,
+    layout: { columns: 4, imageFit: 'contain' },
+    content: {
+      title: 'Giochi per marchio',
+      items: [
+        {
+          name: 'Octavian',
+          logo: '/games-scheda.jpg',
+          href: 'https://',
+          games: [
+            { title: 'Gioco 1', image: '/master5-game.jpg', href: '' },
+            { title: 'Gioco 2', image: '/super7-game.jpg', href: '' },
+            { title: 'Gioco 3', image: '/games-scheda.jpg', href: '' },
+          ],
+        },
+        {
+          name: 'Cristaltec',
+          logo: '/games-scheda.jpg',
+          href: 'https://',
+          games: [
+            { title: 'Gioco 1', image: '/games-scheda.jpg', href: '' },
+            { title: 'Gioco 2', image: '/master5-game.jpg', href: '' },
+          ],
+        },
+      ],
+    },
+  },
+  {
     id: sid(13),
     page_slug: 'games',
     type: 'cta',
     label: 'Contatto',
-    sort_order: 3,
+    sort_order: 4,
     visible: true,
     layout: {},
     content: {
@@ -237,7 +272,7 @@ export const DEFAULT_SECTIONS: CmsSection[] = [
     label: 'Cabinet Earth',
     sort_order: 1,
     visible: true,
-    layout: { imageSide: 'left', imageRatio: 'portrait' },
+    layout: { imageSide: 'left', imageRatio: 'portrait', imageFit: 'contain' },
     content: {
       title: 'Earth',
       subtitle: 'Cabinet Mobile',
@@ -339,7 +374,7 @@ export const DEFAULT_SECTIONS: CmsSection[] = [
     label: 'Modelli monitor',
     sort_order: 1,
     visible: true,
-    layout: {},
+    layout: { imageFit: 'contain' },
     content: {
       items: [
         {
@@ -497,7 +532,7 @@ export const DEFAULT_SECTIONS: CmsSection[] = [
     label: 'Prodotti',
     sort_order: 2,
     visible: true,
-    layout: { columns: 3 },
+    layout: { columns: 3, imageFit: 'contain' },
     content: {
       title: 'I Nostri Prodotti',
       items: [
@@ -568,7 +603,7 @@ export const DEFAULT_SECTIONS: CmsSection[] = [
     label: 'Servizi',
     sort_order: 1,
     visible: true,
-    layout: {},
+    layout: { imageFit: 'contain' },
     content: {
       items: [
         {

@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import { Disc, Play, Calendar, Music, ArrowLeft } from 'lucide-react';
 import { heroConfig } from '../config';
 import { useCms } from '../context/CmsProvider';
@@ -20,6 +20,7 @@ interface SiteHeaderProps {
 
 export default function SiteHeader({ variant = 'home' }: SiteHeaderProps) {
   const to = useAppPath();
+  const location = useLocation();
   const { getHero } = useCms();
   const hero = getHero()?.content as Partial<typeof heroConfig> | undefined;
   const navItems = hero?.navItems ?? heroConfig.navItems;
@@ -33,6 +34,13 @@ export default function SiteHeader({ variant = 'home' }: SiteHeaderProps) {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+  };
+
+  const isActive = (href?: string) => {
+    if (!href) return false;
+    const path = location.pathname.replace(/\/$/, '') || '/';
+    const target = to(href).replace(/\/$/, '') || '/';
+    return path === target || path.endsWith(href);
   };
 
   const mobileNavLinks =
@@ -64,41 +72,41 @@ export default function SiteHeader({ variant = 'home' }: SiteHeaderProps) {
       <div className="grid grid-cols-[auto_1fr_auto] items-center gap-2 sm:gap-4 px-4 sm:px-6 py-3 sm:py-4 min-h-[56px]">
         <Logo size="md" />
 
-        {variant === 'home' ? (
-          <nav
-            className="hidden md:flex items-center justify-center gap-0.5 nav-pill rounded-full px-2 py-1.5 border border-white/10 min-w-0"
-            aria-label="Navigazione principale"
-          >
-            {navItems.map((item) => {
-              const Icon = ICON_MAP[item.icon] ?? Disc;
-              if (item.href) {
-                return (
-                  <Link
-                    key={item.label}
-                    to={to(item.href)}
-                    className="flex items-center gap-1.5 px-3 py-2 text-[10px] lg:text-xs font-mono-custom uppercase tracking-wider text-white/80 hover:text-white transition-colors rounded-full hover:bg-white/5 whitespace-nowrap"
-                  >
-                    <Icon className="w-3.5 h-3.5 shrink-0" />
-                    <span>{item.label}</span>
-                  </Link>
-                );
-              }
+        <nav
+          className="hidden md:flex items-center justify-center gap-0.5 nav-pill rounded-full px-2 py-1.5 border border-white/10 min-w-0"
+          aria-label="Navigazione principale"
+        >
+          {navItems.map((item) => {
+            const Icon = ICON_MAP[item.icon] ?? Disc;
+            const active = variant === 'page' && isActive(item.href);
+            const className = `flex items-center gap-1.5 px-3 py-2 text-[10px] lg:text-xs font-mono-custom uppercase tracking-wider transition-colors rounded-full whitespace-nowrap ${
+              active
+                ? 'bg-neon-cyan text-void-black font-medium'
+                : 'text-white/80 hover:text-white hover:bg-white/5'
+            }`;
+
+            if (item.href) {
               return (
-                <button
-                  key={item.label}
-                  type="button"
-                  onClick={() => scrollToSection(item.sectionId)}
-                  className="flex items-center gap-1.5 px-3 py-2 text-[10px] lg:text-xs font-mono-custom uppercase tracking-wider text-white/80 hover:text-white transition-colors rounded-full hover:bg-white/5 whitespace-nowrap"
-                >
+                <Link key={item.label} to={to(item.href)} className={className}>
                   <Icon className="w-3.5 h-3.5 shrink-0" />
                   <span>{item.label}</span>
-                </button>
+                </Link>
               );
-            })}
-          </nav>
-        ) : (
-          <div className="hidden md:block" />
-        )}
+            }
+
+            return (
+              <button
+                key={item.label}
+                type="button"
+                onClick={() => scrollToSection(item.sectionId)}
+                className={className}
+              >
+                <Icon className="w-3.5 h-3.5 shrink-0" />
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
+        </nav>
 
         <div className="flex items-center justify-end gap-2">
           <MobileNav links={mobileNavLinks} />

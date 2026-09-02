@@ -283,10 +283,6 @@ body.cms-editing .site-header-bar {
   top: 3.5rem;
 }
 
-body.cms-editing .page-subnav {
-  top: 8rem;
-}
-
 /* Horizontal snap scroll (mobile galleries) */
 .snap-x-mandatory {
   scroll-snap-type: x mandatory;

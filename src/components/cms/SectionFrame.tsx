@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp, Columns3, Eye, EyeOff, Image, Plus, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Columns3, Eye, EyeOff, Image, Maximize2, Plus, Trash2 } from 'lucide-react';
 import { ADDABLE_SECTIONS, SECTION_LABELS } from '../../cms/catalog';
 import type { CmsSection } from '../../cms/types';
 import { useCms } from '../../context/CmsProvider';
@@ -18,8 +18,15 @@ export default function SectionFrame({
 
   if (!editing) return <>{children}</>;
 
-  const canColumns = section.type === 'feature_grid' || section.type === 'image_cards';
+  const canColumns =
+    section.type === 'feature_grid' || section.type === 'image_cards' || section.type === 'provider_groups';
   const canFlip = section.type === 'split';
+  const canFit =
+    section.type === 'split' ||
+    section.type === 'split_list' ||
+    section.type === 'image_cards' ||
+    section.type === 'provider_groups';
+  const fitIsCover = section.layout.imageFit === 'cover';
 
   return (
     <div
@@ -66,6 +73,21 @@ export default function SectionFrame({
           >
             <Image size={14} />
             Foto a {section.layout.imageSide === 'right' ? 'sinistra' : 'destra'}
+          </button>
+        )}
+        {canFit && (
+          <button
+            type="button"
+            className="inline-flex items-center gap-1 px-2 py-1 rounded hover:bg-white/10"
+            title="Come entra la foto nel riquadro"
+            onClick={() =>
+              patchLayout(section.id, {
+                imageFit: fitIsCover ? 'contain' : 'cover',
+              })
+            }
+          >
+            <Maximize2 size={14} />
+            {fitIsCover ? 'Ritaglia' : 'Foto intera'}
           </button>
         )}
         {canColumns && (

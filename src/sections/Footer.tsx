@@ -6,7 +6,9 @@ import { Instagram, Twitter, Youtube, Music2, Mail, Phone, MapPin, ExternalLink 
 import { footerConfig } from '../config';
 import type { CmsSection } from '../cms/types';
 import Logo from '../components/Logo';
-import { useAppPath } from '../context/EditMode';
+import EditableImage from '../components/cms/EditableImage';
+import { useAppPath, useIsEditing } from '../context/EditMode';
+import { useCms } from '../context/CmsProvider';
 import { useSiteAssets } from '../context/SiteAssetsProvider';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -25,7 +27,11 @@ const Footer = ({ section }: { section?: CmsSection }) => {
   };
 
   const { resolve } = useSiteAssets();
+  const { patchContent } = useCms();
+  const editing = useIsEditing();
   const to = useAppPath();
+  const isoLogo = cfg.isoLogo || '';
+  const isoHref = cfg.isoHref || '';
   const portraitImage = useMemo(
     () =>
       cfg.portraitImage.startsWith('http')
@@ -148,6 +154,28 @@ const Footer = ({ section }: { section?: CmsSection }) => {
               <p className="text-sm text-white/50 leading-relaxed mb-6">
                 {cfg.brandDescription}
               </p>
+              {(isoLogo || editing) && section?.id ? (
+                <div className="mb-6 h-16 w-36">
+                  <EditableImage
+                    src={isoLogo || '/favicon.png'}
+                    alt="ISO 9001"
+                    fit="contain"
+                    className="h-full w-full"
+                    href={isoHref}
+                    onChange={(next) => patchContent(section.id, { isoLogo: next })}
+                    onHrefChange={(next) => patchContent(section.id, { isoHref: next })}
+                  />
+                </div>
+              ) : isoLogo ? (
+                <a
+                  href={isoHref || undefined}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mb-6 inline-block h-16"
+                >
+                  <img src={isoLogo} alt="ISO 9001" className="h-16 w-auto object-contain" />
+                </a>
+              ) : null}
               {/* Social links */}
               <div className="flex gap-4">
                 {cfg.socialLinks.map((social) => {

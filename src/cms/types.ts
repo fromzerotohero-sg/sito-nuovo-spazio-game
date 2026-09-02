@@ -12,12 +12,14 @@ export type SectionType =
   | 'table'
   | 'cta'
   | 'brands'
-  | 'contact_banner';
+  | 'contact_banner'
+  | 'provider_groups';
 
 export type SectionLayout = {
   imageSide?: 'left' | 'right';
   columns?: 2 | 3 | 4;
   imageRatio?: 'video' | 'portrait' | 'square';
+  imageFit?: 'cover' | 'contain';
 };
 
 export type CmsPage = {
@@ -50,6 +52,8 @@ export type SplitContent = {
   body?: string;
   image?: string;
   imageAlt?: string;
+  imageHref?: string;
+  imageFit?: 'cover' | 'contain';
   badge?: string;
   specs?: SpecItem[];
   listTitle?: string;

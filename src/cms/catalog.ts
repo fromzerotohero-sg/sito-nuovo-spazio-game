@@ -20,13 +20,14 @@ export const ADDABLE_SECTIONS: AddableSection[] = [
     type: 'split',
     label: 'Foto e testo',
     hint: 'Immagine a fianco del contenuto',
-    layout: { imageSide: 'left', imageRatio: 'video' },
+    layout: { imageSide: 'left', imageRatio: 'video', imageFit: 'contain' },
     content: {
       eyebrow: 'Novità',
       title: 'Titolo',
       body: 'Descrivi il prodotto o il servizio.',
       image: '/hero-sede.jpg',
       imageAlt: 'Immagine',
+      imageHref: '',
       listTitle: '',
       list: [],
       specs: [],
@@ -52,12 +53,29 @@ export const ADDABLE_SECTIONS: AddableSection[] = [
     type: 'image_cards',
     label: 'Galleria foto',
     hint: 'Card con immagine, titolo e testo',
-    layout: { columns: 3 },
+    layout: { columns: 3, imageFit: 'contain' },
     content: {
       title: 'Galleria',
       items: [
-        { image: '/hero-sede.jpg', title: 'Foto 1', desc: 'Descrizione' },
-        { image: '/games-scheda.jpg', title: 'Foto 2', desc: 'Descrizione' },
+        { image: '/hero-sede.jpg', title: 'Foto 1', desc: 'Descrizione', href: '' },
+        { image: '/games-scheda.jpg', title: 'Foto 2', desc: 'Descrizione', href: '' },
+      ],
+    },
+  },
+  {
+    type: 'provider_groups',
+    label: 'Giochi per marchio',
+    hint: 'Logo del provider e giochi in riga',
+    layout: { columns: 4, imageFit: 'contain' },
+    content: {
+      title: 'Giochi per marchio',
+      items: [
+        {
+          name: 'Octavian',
+          logo: '/games-scheda.jpg',
+          href: 'https://',
+          games: [{ title: 'Gioco', image: '/games-scheda.jpg', href: '' }],
+        },
       ],
     },
   },
@@ -127,4 +145,5 @@ export const SECTION_LABELS: Record<SectionType, string> = {
   cta: 'Richiamo contatto',
   brands: 'Marchi',
   contact_banner: 'Banner contatto',
+  provider_groups: 'Giochi per marchio',
 };

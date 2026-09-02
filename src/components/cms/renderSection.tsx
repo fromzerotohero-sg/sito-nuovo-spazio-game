@@ -19,6 +19,7 @@ import {
   SplitSection,
   TableSection,
 } from './GenericSections';
+import ProviderGroupsSection from './ProviderGroups';
 import SectionFrame from './SectionFrame';
 
 function HomeImagesEditor({ section }: { section: CmsSection }) {
@@ -176,6 +177,18 @@ function HomeImagesEditor({ section }: { section: CmsSection }) {
             value={(section.content.brandDescription as string) || ''}
             onChange={(brandDescription) => patchContent(section.id, { brandDescription })}
           />
+          <p className="text-xs text-white/40 mt-4 mb-2">Logo ISO 9001 (cliccabile)</p>
+          <div className="h-20 w-36">
+            <EditableImage
+              src={(section.content.isoLogo as string) || '/favicon.png'}
+              alt="ISO 9001"
+              fit="contain"
+              className="h-full w-full"
+              href={(section.content.isoHref as string) || ''}
+              onChange={(isoLogo) => patchContent(section.id, { isoLogo })}
+              onHrefChange={(isoHref) => patchContent(section.id, { isoHref })}
+            />
+          </div>
         </div>
       </div>
     );
@@ -251,6 +264,9 @@ export function SectionRenderer({ section }: { section: CmsSection }) {
       break;
     case 'contact_banner':
       body = <ContactBannerSection section={section} />;
+      break;
+    case 'provider_groups':
+      body = <ProviderGroupsSection section={section} />;
       break;
     default:
       body = null;

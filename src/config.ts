@@ -330,6 +330,8 @@ export interface FooterConfig {
   bottomLinks: string[];
   socialLinks: SocialLink[];
   galleryImages: FooterImage[];
+  isoLogo?: string;
+  isoHref?: string;
 }
 
 export const footerConfig: FooterConfig = {
@@ -375,4 +377,6 @@ export const footerConfig: FooterConfig = {
     { id: 3, src: "/games-scheda.jpg" },
     { id: 4, src: "/cabinet-earth.jpg" },
   ],
+  isoLogo: "",
+  isoHref: "",
 };
