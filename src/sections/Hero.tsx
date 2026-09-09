@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import { ImagePlus, Loader2 } from 'lucide-react';
 import { heroConfig } from '../config';
 import type { CmsSection } from '../cms/types';
+import { uploadCmsImage } from '../cms/api';
 import SiteHeader from '../components/SiteHeader';
 import EditableImage from '../components/cms/EditableImage';
 import EditableText from '../components/cms/EditableText';
@@ -24,6 +26,8 @@ const Hero = ({ section }: { section?: CmsSection }) => {
   const heroRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const [photoBusy, setPhotoBusy] = useState(false);
   const TARGET_TEXT = decodeText;
   const CHARS = content.decodeChars || heroConfig.decodeChars || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
   const [displayText, setDisplayText] = useState(editing ? TARGET_TEXT : ' '.repeat(TARGET_TEXT.length));
@@ -77,6 +81,19 @@ const Hero = ({ section }: { section?: CmsSection }) => {
     }
   };
 
+  async function replaceHeroPhoto(file: File) {
+    if (!section) return;
+    setPhotoBusy(true);
+    try {
+      const url = await uploadCmsImage(file);
+      patchContent(section.id, { backgroundImage: url });
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Errore nel caricamento');
+    } finally {
+      setPhotoBusy(false);
+    }
+  }
+
   if (!decodeText && !heroConfig.brandName && heroConfig.navItems.length === 0) {
     return null;
   }
@@ -87,6 +104,30 @@ const Hero = ({ section }: { section?: CmsSection }) => {
       className="relative w-full min-h-[100dvh] h-[100dvh] overflow-hidden bg-void-black"
     >
       <SiteHeader variant="home" />
+
+      {editing && section ? (
+        <div className="absolute top-36 sm:top-40 left-1/2 -translate-x-1/2 z-[60] w-[min(92vw,28rem)]">
+          <input
+            ref={photoInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml"
+            className="sr-only"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) void replaceHeroPhoto(file);
+              e.target.value = '';
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => photoInputRef.current?.click()}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-neon-cyan px-5 py-3 text-void-black text-xs sm:text-sm font-medium uppercase tracking-wider shadow-lg hover:bg-white"
+          >
+            {photoBusy ? <Loader2 size={16} className="animate-spin" /> : <ImagePlus size={16} />}
+            Cambia foto azienda
+          </button>
+        </div>
+      ) : null}
 
       <div className="absolute inset-0 z-0">
         <EditableImage

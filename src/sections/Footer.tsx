@@ -104,21 +104,30 @@ const Footer = ({ section }: { section?: CmsSection }) => {
           className="absolute inset-0 flex items-center justify-center"
         >
           <div className="relative w-full max-w-xs sm:max-w-md md:max-w-2xl aspect-[2/3] mx-auto px-6 sm:px-0">
-            <img
-              src={portraitImage}
-              alt={cfg.portraitAlt}
-              className="w-full h-full object-cover"
-            />
-            {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-void-black via-void-black/30 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-b from-void-black via-transparent to-transparent opacity-50" />
+            {section?.id ? (
+              <EditableImage
+                src={portraitImage}
+                alt={cfg.portraitAlt}
+                fit="cover"
+                className="w-full h-full"
+                onChange={(next) => patchContent(section.id, { portraitImage: next })}
+              />
+            ) : (
+              <img
+                src={portraitImage}
+                alt={cfg.portraitAlt}
+                className="w-full h-full object-cover"
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-void-black via-void-black/30 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-void-black via-transparent to-transparent opacity-50 pointer-events-none" />
           </div>
         </div>
 
         {/* Parallax title overlay */}
         <div
           ref={titleRef}
-          className="relative z-10 text-center will-change-transform"
+          className={`relative z-10 text-center will-change-transform ${editing ? 'pointer-events-none' : ''}`}
         >
           <h2 className="font-display text-[18vw] sm:text-[15vw] text-white leading-none tracking-tighter px-2">
             {cfg.heroTitle}
@@ -129,7 +138,7 @@ const Footer = ({ section }: { section?: CmsSection }) => {
         </div>
 
         {/* Artist name */}
-        <div className="absolute bottom-6 left-4 right-4 sm:bottom-20 sm:left-12 sm:right-auto z-20 text-center sm:text-left">
+        <div className="absolute bottom-6 left-4 right-4 sm:bottom-20 sm:left-12 sm:right-auto z-20 text-center sm:text-left pointer-events-none">
           <p className="font-mono-custom text-xs text-white/40 uppercase tracking-wider mb-2">
             {cfg.artistLabel}
           </p>
@@ -272,7 +281,7 @@ const Footer = ({ section }: { section?: CmsSection }) => {
           </div>
 
           {/* Footer image grid */}
-          {cfg.galleryImages.length > 0 && (
+          {(galleryImages.length > 0 || editing) && (
             <div className="mb-12">
               <p className="font-mono-custom text-xs text-white/30 uppercase tracking-wider mb-4">
                 Gallery
@@ -281,20 +290,64 @@ const Footer = ({ section }: { section?: CmsSection }) => {
                 {galleryImages.map((image, index) => (
                   <div
                     key={image.id}
-                    className="relative aspect-square overflow-hidden rounded-lg footer-grid-item cursor-pointer"
+                    className="relative aspect-square overflow-hidden rounded-lg footer-grid-item"
                     onMouseEnter={() => setHoveredImage(index)}
                     onMouseLeave={() => setHoveredImage(null)}
                   >
-                    <img
-                      src={image.src}
-                      alt=""
-                      className={`w-full h-full object-cover transition-all duration-300 ${
-                        hoveredImage === index ? 'scale-110 brightness-110' : 'brightness-75'
-                      }`}
-                    />
+                    {section?.id ? (
+                      <EditableImage
+                        src={image.src}
+                        alt=""
+                        fit="cover"
+                        className={`w-full h-full transition-all duration-300 ${
+                          hoveredImage === index ? 'scale-110 brightness-110' : 'brightness-75'
+                        }`}
+                        onChange={(src) => {
+                          const next = galleryImages.map((g, i) => (i === index ? { ...g, src } : g));
+                          patchContent(section.id, { galleryImages: next });
+                        }}
+                      />
+                    ) : (
+                      <img
+                        src={image.src}
+                        alt=""
+                        className={`w-full h-full object-cover transition-all duration-300 ${
+                          hoveredImage === index ? 'scale-110 brightness-110' : 'brightness-75'
+                        }`}
+                      />
+                    )}
+                    {editing && section?.id ? (
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 z-30 text-[10px] bg-void-black/80 px-1.5 py-0.5 rounded text-white/80"
+                        onClick={() =>
+                          patchContent(section.id, {
+                            galleryImages: galleryImages.filter((_, i) => i !== index),
+                          })
+                        }
+                      >
+                        Rimuovi
+                      </button>
+                    ) : null}
                   </div>
                 ))}
               </div>
+              {editing && section?.id ? (
+                <button
+                  type="button"
+                  className="mt-4 text-sm text-neon-cyan"
+                  onClick={() =>
+                    patchContent(section.id, {
+                      galleryImages: [
+                        ...galleryImages,
+                        { id: Date.now(), src: '/hero-sede.jpg' },
+                      ],
+                    })
+                  }
+                >
+                  + Aggiungi foto in galleria
+                </button>
+              ) : null}
             </div>
           )}
 

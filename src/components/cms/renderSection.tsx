@@ -27,6 +27,26 @@ function HomeImagesEditor({ section }: { section: CmsSection }) {
   const { patchContent } = useCms();
   if (!editing) return null;
 
+  if (section.type === 'hero') {
+    return (
+      <div className="px-4 pb-6 max-w-6xl mx-auto">
+        <p className="text-xs text-white/40 mb-2">Foto copertina (azienda)</p>
+        <div className="w-full max-w-xl aspect-video rounded-lg overflow-hidden border border-white/10 bg-void-dark">
+          <EditableImage
+            src={(section.content.backgroundImage as string) || '/hero-sede.jpg'}
+            alt="Foto azienda"
+            fit="cover"
+            className="w-full h-full"
+            onChange={(backgroundImage) => patchContent(section.id, { backgroundImage })}
+          />
+        </div>
+        <p className="text-[11px] text-white/35 mt-2">
+          Passa il mouse sulla foto e premi Cambia foto. Poi Salva in alto.
+        </p>
+      </div>
+    );
+  }
+
   if (section.type === 'album_cube') {
     const albums = (section.content.albums as { title: string; subtitle: string; image: string; href: string }[]) ?? [];
     const cubeTextures = (section.content.cubeTextures as string[]) ?? [];
@@ -189,6 +209,23 @@ function HomeImagesEditor({ section }: { section: CmsSection }) {
               onHrefChange={(isoHref) => patchContent(section.id, { isoHref })}
             />
           </div>
+          <p className="text-xs text-white/40 mt-4 mb-2">Galleria in fondo</p>
+          <div className="grid grid-cols-4 gap-2">
+            {((section.content.galleryImages as { id: number; src: string }[]) ?? []).map((img, i) => (
+              <EditableImage
+                key={`${img.id}-${i}`}
+                src={img.src}
+                alt=""
+                fit="cover"
+                className="aspect-square rounded"
+                onChange={(src) => {
+                  const galleryImages = [...((section.content.galleryImages as { id: number; src: string }[]) ?? [])];
+                  galleryImages[i] = { ...galleryImages[i], src };
+                  patchContent(section.id, { galleryImages });
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -204,7 +241,12 @@ export function SectionRenderer({ section }: { section: CmsSection }) {
   let body: React.ReactNode;
   switch (section.type) {
     case 'hero':
-      body = <Hero section={section} />;
+      body = (
+        <>
+          <Hero section={section} />
+          <HomeImagesEditor section={section} />
+        </>
+      );
       break;
     case 'album_cube':
       body = (
