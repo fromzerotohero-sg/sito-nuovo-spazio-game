@@ -14,6 +14,7 @@ type EditableImageProps = {
   onHrefChange?: (href: string) => void;
   asBackground?: boolean;
   fit?: 'cover' | 'contain';
+  hidePicker?: boolean;
   children?: React.ReactNode;
 };
 
@@ -26,6 +27,7 @@ export default function EditableImage({
   onHrefChange,
   asBackground,
   fit = 'cover',
+  hidePicker,
   children,
 }: EditableImageProps) {
   const editing = useIsEditing();
@@ -45,7 +47,7 @@ export default function EditableImage({
     }
   }
 
-  const picker = editing ? (
+  const picker = editing && !hidePicker ? (
     <>
       <input
         ref={inputRef}
@@ -67,7 +69,7 @@ export default function EditableImage({
         }}
         className="absolute inset-0 z-20 flex items-center justify-center bg-void-black/0 hover:bg-void-black/45 transition-colors group/img"
       >
-        <span className="opacity-0 group-hover/img:opacity-100 flex items-center gap-2 px-3 py-2 rounded-full bg-neon-cyan text-void-black text-xs font-medium uppercase tracking-wider">
+        <span className="flex items-center gap-2 px-3 py-2 rounded-full bg-neon-cyan text-void-black text-xs font-medium uppercase tracking-wider shadow-lg">
           {busy ? <Loader2 size={14} className="animate-spin" /> : <ImagePlus size={14} />}
           Cambia foto
         </span>

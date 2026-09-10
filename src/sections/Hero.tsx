@@ -106,7 +106,7 @@ const Hero = ({ section }: { section?: CmsSection }) => {
       <SiteHeader variant="home" />
 
       {editing && section ? (
-        <div className="absolute top-36 sm:top-40 left-1/2 -translate-x-1/2 z-[60] w-[min(92vw,28rem)]">
+        <div className="absolute inset-0 z-[60] flex items-center justify-center pointer-events-none">
           <input
             ref={photoInputRef}
             type="file"
@@ -121,10 +121,10 @@ const Hero = ({ section }: { section?: CmsSection }) => {
           <button
             type="button"
             onClick={() => photoInputRef.current?.click()}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-neon-cyan px-5 py-3 text-void-black text-xs sm:text-sm font-medium uppercase tracking-wider shadow-lg hover:bg-white"
+            className="pointer-events-auto inline-flex items-center justify-center gap-2 rounded-full bg-neon-cyan px-6 py-3 text-void-black text-xs sm:text-sm font-medium uppercase tracking-wider shadow-lg hover:bg-white"
           >
             {photoBusy ? <Loader2 size={16} className="animate-spin" /> : <ImagePlus size={16} />}
-            Cambia foto azienda
+            Cambia foto sfondo
           </button>
         </div>
       ) : null}
@@ -132,6 +132,7 @@ const Hero = ({ section }: { section?: CmsSection }) => {
       <div className="absolute inset-0 z-0">
         <EditableImage
           asBackground
+          hidePicker
           src={heroBackground}
           className="absolute inset-0"
           onChange={(backgroundImage) => section && patchContent(section.id, { backgroundImage })}
@@ -141,10 +142,10 @@ const Hero = ({ section }: { section?: CmsSection }) => {
         </EditableImage>
       </div>
 
-      <div className="relative z-10 flex flex-col items-center justify-end h-full pb-8 sm:pb-16 md:pb-20 px-4 sm:px-6 pt-24">
+      <div className={`relative z-10 flex flex-col items-center justify-end h-full pb-8 sm:pb-16 md:pb-20 px-4 sm:px-6 pt-24 ${editing ? 'pointer-events-none' : ''}`}>
         <h1
           ref={titleRef}
-          className="decode-text text-[8vw] sm:text-[9vw] md:text-[10vw] lg:text-[8vw] font-bold text-white leading-[0.95] tracking-tighter mb-3 sm:mb-4 text-center max-w-[100vw] px-1 break-words"
+          className="decode-text text-[8vw] sm:text-[9vw] md:text-[10vw] lg:text-[8vw] font-bold text-white leading-[0.95] tracking-tighter mb-3 sm:mb-4 text-center max-w-[100vw] px-1 break-words pointer-events-auto"
         >
           <span className={`${isDecoding ? 'text-glow-cyan' : ''} transition-all duration-300`}>
             {editing && section ? (
@@ -160,7 +161,7 @@ const Hero = ({ section }: { section?: CmsSection }) => {
 
         <p
           ref={subtitleRef}
-          className="font-mono-custom text-[10px] sm:text-xs md:text-sm text-neon-soft/70 uppercase tracking-[0.15em] sm:tracking-[0.25em] md:tracking-[0.3em] mb-6 sm:mb-8 text-center max-w-xl leading-relaxed px-2"
+          className="font-mono-custom text-[10px] sm:text-xs md:text-sm text-neon-soft/70 uppercase tracking-[0.15em] sm:tracking-[0.25em] md:tracking-[0.3em] mb-6 sm:mb-8 text-center max-w-xl leading-relaxed px-2 pointer-events-auto"
         >
           {section ? (
             <EditableText
@@ -173,7 +174,7 @@ const Hero = ({ section }: { section?: CmsSection }) => {
           )}
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto max-w-sm sm:max-w-none">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto max-w-sm sm:max-w-none pointer-events-auto">
           <button
             type="button"
             onClick={() => scrollToSection(content.ctaPrimaryTarget || heroConfig.ctaPrimaryTarget)}
@@ -201,7 +202,7 @@ const Hero = ({ section }: { section?: CmsSection }) => {
 
       <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-neon-cyan/30 to-transparent" />
 
-      <div className="hidden sm:block absolute top-24 right-4 sm:right-8 text-right z-10">
+      <div className="hidden sm:block absolute top-24 right-4 sm:right-8 text-right z-10 pointer-events-auto">
         <p className="font-mono-custom text-xs text-white/40 uppercase tracking-wider">
           {section ? (
             <EditableText value={cornerLabel} onChange={(next) => patchContent(section.id, { cornerLabel: next })} />

@@ -2,9 +2,10 @@ import { useRef, useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Instagram, Twitter, Youtube, Music2, Mail, Phone, MapPin, ExternalLink } from 'lucide-react';
+import { Instagram, Twitter, Youtube, Music2, Mail, Phone, MapPin, ExternalLink, ImagePlus } from 'lucide-react';
 import { footerConfig } from '../config';
 import type { CmsSection } from '../cms/types';
+import { uploadCmsImage } from '../cms/api';
 import Logo from '../components/Logo';
 import EditableImage from '../components/cms/EditableImage';
 import { useAppPath, useIsEditing } from '../context/EditMode';
@@ -98,6 +99,27 @@ const Footer = ({ section }: { section?: CmsSection }) => {
     >
       {/* Artist portrait section */}
       <div className="relative min-h-[70vh] sm:min-h-screen flex items-center justify-center overflow-hidden py-16 sm:py-0">
+        {editing && section?.id ? (
+          <div className="absolute inset-0 z-[60] flex items-center justify-center pointer-events-none">
+            <label className="pointer-events-auto inline-flex cursor-pointer items-center gap-2 rounded-full bg-neon-cyan px-6 py-3 text-void-black text-xs sm:text-sm font-medium uppercase tracking-wider shadow-lg hover:bg-white">
+              <ImagePlus size={16} />
+              Cambia foto sfondo
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml"
+                className="sr-only"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  void uploadCmsImage(file)
+                    .then((url) => patchContent(section.id, { portraitImage: url }))
+                    .catch((err) => alert(err instanceof Error ? err.message : 'Errore nel caricamento'));
+                  e.target.value = '';
+                }}
+              />
+            </label>
+          </div>
+        ) : null}
         {/* Background portrait */}
         <div
           ref={portraitRef}
@@ -109,6 +131,7 @@ const Footer = ({ section }: { section?: CmsSection }) => {
                 src={portraitImage}
                 alt={cfg.portraitAlt}
                 fit="cover"
+                hidePicker
                 className="w-full h-full"
                 onChange={(next) => patchContent(section.id, { portraitImage: next })}
               />
@@ -286,11 +309,11 @@ const Footer = ({ section }: { section?: CmsSection }) => {
               <p className="font-mono-custom text-xs text-white/30 uppercase tracking-wider mb-4">
                 Gallery
               </p>
-              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {galleryImages.map((image, index) => (
                   <div
                     key={image.id}
-                    className="relative aspect-square overflow-hidden rounded-lg footer-grid-item"
+                    className="relative aspect-video overflow-hidden rounded-xl bg-void-dark border border-white/10"
                     onMouseEnter={() => setHoveredImage(index)}
                     onMouseLeave={() => setHoveredImage(null)}
                   >
@@ -299,8 +322,8 @@ const Footer = ({ section }: { section?: CmsSection }) => {
                         src={image.src}
                         alt=""
                         fit="cover"
-                        className={`w-full h-full transition-all duration-300 ${
-                          hoveredImage === index ? 'scale-110 brightness-110' : 'brightness-75'
+                        className={`w-full h-full transition-transform duration-300 ${
+                          hoveredImage === index ? 'scale-105' : ''
                         }`}
                         onChange={(src) => {
                           const next = galleryImages.map((g, i) => (i === index ? { ...g, src } : g));
@@ -311,15 +334,15 @@ const Footer = ({ section }: { section?: CmsSection }) => {
                       <img
                         src={image.src}
                         alt=""
-                        className={`w-full h-full object-cover transition-all duration-300 ${
-                          hoveredImage === index ? 'scale-110 brightness-110' : 'brightness-75'
+                        className={`w-full h-full object-cover transition-transform duration-300 ${
+                          hoveredImage === index ? 'scale-105' : ''
                         }`}
                       />
                     )}
                     {editing && section?.id ? (
                       <button
                         type="button"
-                        className="absolute top-1 right-1 z-30 text-[10px] bg-void-black/80 px-1.5 py-0.5 rounded text-white/80"
+                        className="absolute top-2 right-2 z-30 text-xs bg-void-black/80 px-2 py-1 rounded text-white/80"
                         onClick={() =>
                           patchContent(section.id, {
                             galleryImages: galleryImages.filter((_, i) => i !== index),

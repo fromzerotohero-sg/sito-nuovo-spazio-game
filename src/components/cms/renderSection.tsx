@@ -210,14 +210,14 @@ function HomeImagesEditor({ section }: { section: CmsSection }) {
             />
           </div>
           <p className="text-xs text-white/40 mt-4 mb-2">Galleria in fondo</p>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {((section.content.galleryImages as { id: number; src: string }[]) ?? []).map((img, i) => (
               <EditableImage
                 key={`${img.id}-${i}`}
                 src={img.src}
                 alt=""
                 fit="cover"
-                className="aspect-square rounded"
+                className="aspect-video rounded-xl"
                 onChange={(src) => {
                   const galleryImages = [...((section.content.galleryImages as { id: number; src: string }[]) ?? [])];
                   galleryImages[i] = { ...galleryImages[i], src };
