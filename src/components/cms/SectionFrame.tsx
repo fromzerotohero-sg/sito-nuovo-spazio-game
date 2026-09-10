@@ -28,7 +28,7 @@ export default function SectionFrame({
         ? 3
         : 2
       : (section.layout.columns ?? 3);
-  const canFlip = section.type === 'split';
+  const canFlip = section.type === 'split' || section.type === 'split_list';
   const canFit =
     section.type === 'split' ||
     section.type === 'split_list' ||

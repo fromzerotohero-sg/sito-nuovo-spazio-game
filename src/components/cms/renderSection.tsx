@@ -17,6 +17,7 @@ import {
   IntroSection,
   SplitListSection,
   SplitSection,
+  SpacerSection,
   TableSection,
 } from './GenericSections';
 import ProviderGroupsSection from './ProviderGroups';
@@ -288,6 +289,9 @@ export function SectionRenderer({ section }: { section: CmsSection }) {
       break;
     case 'split_list':
       body = <SplitListSection section={section} />;
+      break;
+    case 'spacer':
+      body = <SpacerSection section={section} />;
       break;
     case 'feature_grid':
       body = <FeatureGridSection section={section} />;

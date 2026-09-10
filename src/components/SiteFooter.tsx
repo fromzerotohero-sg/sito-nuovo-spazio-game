@@ -38,13 +38,24 @@ export default function SiteFooter() {
     <footer className="relative py-12 sm:py-16 px-4 sm:px-6 lg:px-12 border-t border-white/10">
       {editing && (
         <p className="max-w-6xl mx-auto mb-4 text-[11px] text-neon-cyan/80">
-          Footer modificabile: testi, contatti, logo ISO e relativo link.
+          Footer modificabile: clicca testi, logo e foto. Poi Salva in alto.
         </p>
       )}
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col gap-10 md:flex-row md:justify-between md:items-start">
           <div className="min-w-0">
-            <span className="text-white font-display text-lg sm:text-xl tracking-[0.15em] uppercase">SPAZIOGAME</span>
+            {id ? (
+              <EditableText
+                as="span"
+                className="text-white font-display text-lg sm:text-xl tracking-[0.15em] uppercase"
+                value={content.brandName || 'SPAZIOGAME'}
+                onChange={(brandName) => set({ brandName })}
+              />
+            ) : (
+              <span className="text-white font-display text-lg sm:text-xl tracking-[0.15em] uppercase">
+                {content.brandName || 'SPAZIOGAME'}
+              </span>
+            )}
             {id ? (
               <EditableText
                 as="p"
@@ -76,7 +87,16 @@ export default function SiteFooter() {
 
           <div className="grid grid-cols-2 gap-8 sm:gap-12 sm:flex sm:flex-row">
             <div>
-              <h4 className="text-white/60 text-xs tracking-[0.2em] uppercase mb-4">Link Rapidi</h4>
+              <h4 className="text-white/60 text-xs tracking-[0.2em] uppercase mb-4">
+                {id ? (
+                  <EditableText
+                    value={content.quickLinksTitle || 'Link Rapidi'}
+                    onChange={(quickLinksTitle) => set({ quickLinksTitle })}
+                  />
+                ) : (
+                  content.quickLinksTitle || 'Link Rapidi'
+                )}
+              </h4>
               <ul className="space-y-2">
                 {PAGE_NAV.map((item) => (
                   <li key={item.to}>
@@ -89,7 +109,16 @@ export default function SiteFooter() {
             </div>
 
             <div>
-              <h4 className="text-white/60 text-xs tracking-[0.2em] uppercase mb-4">Contatti</h4>
+              <h4 className="text-white/60 text-xs tracking-[0.2em] uppercase mb-4">
+                {id ? (
+                  <EditableText
+                    value={content.contactTitle || 'Contatti'}
+                    onChange={(contactTitle) => set({ contactTitle })}
+                  />
+                ) : (
+                  content.contactTitle || 'Contatti'
+                )}
+              </h4>
               <ul className="space-y-2 text-white/40 text-sm">
                 <li>
                   {id ? (

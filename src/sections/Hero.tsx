@@ -31,12 +31,24 @@ const Hero = ({ section }: { section?: CmsSection }) => {
   const TARGET_TEXT = decodeText;
   const CHARS = content.decodeChars || heroConfig.decodeChars || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
   const [displayText, setDisplayText] = useState(editing ? TARGET_TEXT : ' '.repeat(TARGET_TEXT.length));
-  const [isDecoding, setIsDecoding] = useState(!editing);
+  const [isDecoding, setIsDecoding] = useState(!editing && TARGET_TEXT.length > 0);
 
   useEffect(() => {
-    if (editing) return;
+    if (editing) {
+      setDisplayText(TARGET_TEXT);
+      setIsDecoding(false);
+      return;
+    }
+    if (!TARGET_TEXT) {
+      setDisplayText('');
+      setIsDecoding(false);
+      return;
+    }
+
     let iteration = 0;
     const maxIterations = TARGET_TEXT.length * 8;
+    setDisplayText(' '.repeat(TARGET_TEXT.length));
+    setIsDecoding(true);
 
     const interval = setInterval(() => {
       setDisplayText(() => {
@@ -60,7 +72,7 @@ const Hero = ({ section }: { section?: CmsSection }) => {
     }, 40);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [CHARS, TARGET_TEXT, editing]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -143,36 +155,50 @@ const Hero = ({ section }: { section?: CmsSection }) => {
       </div>
 
       <div className={`relative z-10 flex flex-col items-center justify-end h-full pb-8 sm:pb-16 md:pb-20 px-4 sm:px-6 pt-24 ${editing ? 'pointer-events-none' : ''}`}>
-        <h1
-          ref={titleRef}
-          className="decode-text text-[8vw] sm:text-[9vw] md:text-[10vw] lg:text-[8vw] font-bold text-white leading-[0.95] tracking-tighter mb-3 sm:mb-4 text-center max-w-[100vw] px-1 break-words pointer-events-auto"
-        >
-          <span className={`${isDecoding ? 'text-glow-cyan' : ''} transition-all duration-300`}>
-            {editing && section ? (
+        {(editing || decodeText) && (
+          <h1
+            ref={titleRef}
+            className="decode-text text-[8vw] sm:text-[9vw] md:text-[10vw] lg:text-[8vw] font-bold text-white leading-[0.95] tracking-tighter mb-3 sm:mb-4 text-center max-w-[100vw] px-1 break-words pointer-events-auto"
+          >
+            <span className={`${isDecoding ? 'text-glow-cyan' : ''} transition-all duration-300`}>
+              {editing && section ? (
+                <EditableText
+                  value={decodeText}
+                  placeholder="Scrivi la frase…"
+                  onChange={(next) => patchContent(section.id, { decodeText: next })}
+                />
+              ) : (
+                displayText
+              )}
+            </span>
+          </h1>
+        )}
+        {editing && section && decodeText ? (
+          <button
+            type="button"
+            className="pointer-events-auto mb-4 inline-flex items-center rounded-full border border-white/25 bg-void-black/70 px-4 py-1.5 text-[11px] uppercase tracking-wider text-white/80 hover:border-red-300 hover:text-red-200"
+            onClick={() => patchContent(section.id, { decodeText: '' })}
+          >
+            Togli scritta
+          </button>
+        ) : null}
+
+        {(editing || subtitle) && (
+          <p
+            ref={subtitleRef}
+            className="font-mono-custom text-[10px] sm:text-xs md:text-sm text-neon-soft/70 uppercase tracking-[0.15em] sm:tracking-[0.25em] md:tracking-[0.3em] mb-6 sm:mb-8 text-center max-w-xl leading-relaxed px-2 pointer-events-auto"
+          >
+            {section ? (
               <EditableText
-                value={decodeText}
-                onChange={(next) => patchContent(section.id, { decodeText: next })}
+                multiline
+                value={subtitle}
+                onChange={(next) => patchContent(section.id, { subtitle: next })}
               />
             ) : (
-              displayText
+              subtitle
             )}
-          </span>
-        </h1>
-
-        <p
-          ref={subtitleRef}
-          className="font-mono-custom text-[10px] sm:text-xs md:text-sm text-neon-soft/70 uppercase tracking-[0.15em] sm:tracking-[0.25em] md:tracking-[0.3em] mb-6 sm:mb-8 text-center max-w-xl leading-relaxed px-2 pointer-events-auto"
-        >
-          {section ? (
-            <EditableText
-              multiline
-              value={subtitle}
-              onChange={(next) => patchContent(section.id, { subtitle: next })}
-            />
-          ) : (
-            subtitle
-          )}
-        </p>
+          </p>
+        )}
 
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto max-w-sm sm:max-w-none pointer-events-auto">
           <button

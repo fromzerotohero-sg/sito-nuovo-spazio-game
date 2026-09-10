@@ -3,11 +3,12 @@ import { Link } from 'react-router';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Instagram, Twitter, Youtube, Music2, Mail, Phone, MapPin, ExternalLink, ImagePlus } from 'lucide-react';
-import { footerConfig } from '../config';
+import { footerConfig, brandAssets } from '../config';
 import type { CmsSection } from '../cms/types';
 import { uploadCmsImage } from '../cms/api';
 import Logo from '../components/Logo';
 import EditableImage from '../components/cms/EditableImage';
+import EditableText from '../components/cms/EditableText';
 import { useAppPath, useIsEditing } from '../context/EditMode';
 import { useCms } from '../context/CmsProvider';
 import { useSiteAssets } from '../context/SiteAssetsProvider';
@@ -33,6 +34,11 @@ const Footer = ({ section }: { section?: CmsSection }) => {
   const to = useAppPath();
   const isoLogo = cfg.isoLogo || '';
   const isoHref = cfg.isoHref || '';
+  const brandLogo = (section?.content as { brandLogo?: string } | undefined)?.brandLogo || '';
+
+  function save(partial: Record<string, unknown>) {
+    if (section?.id) patchContent(section.id, partial);
+  }
   const portraitImage = useMemo(
     () =>
       cfg.portraitImage.startsWith('http')
@@ -152,11 +158,19 @@ const Footer = ({ section }: { section?: CmsSection }) => {
           ref={titleRef}
           className={`relative z-10 text-center will-change-transform ${editing ? 'pointer-events-none' : ''}`}
         >
-          <h2 className="font-display text-[18vw] sm:text-[15vw] text-white leading-none tracking-tighter px-2">
-            {cfg.heroTitle}
+          <h2 className="font-display text-[18vw] sm:text-[15vw] text-white leading-none tracking-tighter px-2 pointer-events-auto">
+            {section?.id ? (
+              <EditableText value={cfg.heroTitle} onChange={(heroTitle) => save({ heroTitle })} />
+            ) : (
+              cfg.heroTitle
+            )}
           </h2>
-          <p className="font-mono-custom text-sm sm:text-lg text-neon-soft/60 uppercase tracking-[0.3em] sm:tracking-[0.5em] mt-3 sm:mt-4">
-            {cfg.heroSubtitle}
+          <p className="font-mono-custom text-sm sm:text-lg text-neon-soft/60 uppercase tracking-[0.3em] sm:tracking-[0.5em] mt-3 sm:mt-4 pointer-events-auto">
+            {section?.id ? (
+              <EditableText value={cfg.heroSubtitle} onChange={(heroSubtitle) => save({ heroSubtitle })} />
+            ) : (
+              cfg.heroSubtitle
+            )}
           </p>
         </div>
 
@@ -180,12 +194,32 @@ const Footer = ({ section }: { section?: CmsSection }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
             {/* Brand */}
             <div>
-              <div className="mb-6">
-                <Logo size="lg" linkTo="/" className="max-w-[240px]" />
+              <div className="mb-6 max-w-[240px] h-16">
+                {section?.id ? (
+                  <EditableImage
+                    src={brandLogo || brandAssets.logo}
+                    alt={cfg.brandName}
+                    fit="contain"
+                    className="h-full w-full object-contain object-left"
+                    onChange={(next) => save({ brandLogo: next })}
+                  />
+                ) : brandLogo ? (
+                  <img src={brandLogo} alt={cfg.brandName} className="h-16 w-auto max-w-[240px] object-contain object-left" />
+                ) : (
+                  <Logo size="lg" linkTo="/" className="max-w-[240px]" />
+                )}
               </div>
-              <p className="text-sm text-white/50 leading-relaxed mb-6">
-                {cfg.brandDescription}
-              </p>
+              {section?.id ? (
+                <EditableText
+                  as="p"
+                  multiline
+                  className="text-sm text-white/50 leading-relaxed mb-6"
+                  value={cfg.brandDescription}
+                  onChange={(brandDescription) => save({ brandDescription })}
+                />
+              ) : (
+                <p className="text-sm text-white/50 leading-relaxed mb-6">{cfg.brandDescription}</p>
+              )}
               {(isoLogo || editing) && section?.id ? (
                 <div className="mb-6 h-40 w-72 max-w-full">
                   <EditableImage
@@ -229,18 +263,35 @@ const Footer = ({ section }: { section?: CmsSection }) => {
             {/* Quick Links */}
             <div>
               <h4 className="font-display text-sm uppercase tracking-wider text-white mb-6">
-                {cfg.quickLinksTitle}
+                {section?.id ? (
+                  <EditableText value={cfg.quickLinksTitle} onChange={(quickLinksTitle) => save({ quickLinksTitle })} />
+                ) : (
+                  cfg.quickLinksTitle
+                )}
               </h4>
               <ul className="space-y-3">
-                {cfg.quickLinks.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      to={to(link.href)}
-                      className="text-sm text-white/50 hover:text-neon-soft transition-colors flex items-center gap-2 group"
-                    >
-                      <span>{link.label}</span>
-                      <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </Link>
+                {cfg.quickLinks.map((link, i) => (
+                  <li key={`${link.href}-${i}`}>
+                    {section?.id ? (
+                      <EditableText
+                        className="text-sm text-white/50"
+                        value={link.label}
+                        onChange={(label) => {
+                          const quickLinks = cfg.quickLinks.map((item, idx) =>
+                            idx === i ? { ...item, label } : item,
+                          );
+                          save({ quickLinks });
+                        }}
+                      />
+                    ) : (
+                      <Link
+                        to={to(link.href)}
+                        className="text-sm text-white/50 hover:text-neon-soft transition-colors flex items-center gap-2 group"
+                      >
+                        <span>{link.label}</span>
+                        <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -249,30 +300,85 @@ const Footer = ({ section }: { section?: CmsSection }) => {
             {/* Contact */}
             <div>
               <h4 className="font-display text-sm uppercase tracking-wider text-white mb-6">
-                {cfg.contactTitle}
+                {section?.id ? (
+                  <EditableText value={cfg.contactTitle} onChange={(contactTitle) => save({ contactTitle })} />
+                ) : (
+                  cfg.contactTitle
+                )}
               </h4>
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
                   <Mail className="w-4 h-4 text-neon-soft/60 mt-0.5" />
                   <div>
-                    <p className="text-sm text-white/50">{cfg.emailLabel}</p>
-                    <a href={`mailto:${cfg.email}`} className="text-sm text-white hover:text-neon-soft transition-colors">
-                      {cfg.email}
-                    </a>
+                    {section?.id ? (
+                      <>
+                        <EditableText
+                          className="text-sm text-white/50"
+                          value={cfg.emailLabel}
+                          onChange={(emailLabel) => save({ emailLabel })}
+                        />
+                        <EditableText
+                          className="text-sm text-white"
+                          value={cfg.email}
+                          onChange={(email) => save({ email })}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-sm text-white/50">{cfg.emailLabel}</p>
+                        <a href={`mailto:${cfg.email}`} className="text-sm text-white hover:text-neon-soft transition-colors">
+                          {cfg.email}
+                        </a>
+                      </>
+                    )}
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
                   <Phone className="w-4 h-4 text-neon-soft/60 mt-0.5" />
                   <div>
-                    <p className="text-sm text-white/50">{cfg.phoneLabel}</p>
-                    <span className="text-sm text-white">{cfg.phone}</span>
+                    {section?.id ? (
+                      <>
+                        <EditableText
+                          className="text-sm text-white/50"
+                          value={cfg.phoneLabel}
+                          onChange={(phoneLabel) => save({ phoneLabel })}
+                        />
+                        <EditableText
+                          className="text-sm text-white"
+                          value={cfg.phone}
+                          onChange={(phone) => save({ phone })}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-sm text-white/50">{cfg.phoneLabel}</p>
+                        <span className="text-sm text-white">{cfg.phone}</span>
+                      </>
+                    )}
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
                   <MapPin className="w-4 h-4 text-neon-soft/60 mt-0.5" />
                   <div>
-                    <p className="text-sm text-white/50">{cfg.addressLabel}</p>
-                    <span className="text-sm text-white">{cfg.address}</span>
+                    {section?.id ? (
+                      <>
+                        <EditableText
+                          className="text-sm text-white/50"
+                          value={cfg.addressLabel}
+                          onChange={(addressLabel) => save({ addressLabel })}
+                        />
+                        <EditableText
+                          className="text-sm text-white"
+                          value={cfg.address}
+                          onChange={(address) => save({ address })}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-sm text-white/50">{cfg.addressLabel}</p>
+                        <span className="text-sm text-white">{cfg.address}</span>
+                      </>
+                    )}
                   </div>
                 </li>
               </ul>
@@ -281,11 +387,23 @@ const Footer = ({ section }: { section?: CmsSection }) => {
             {/* Newsletter */}
             <div>
               <h4 className="font-display text-sm uppercase tracking-wider text-white mb-6">
-                {cfg.newsletterTitle}
+                {section?.id ? (
+                  <EditableText value={cfg.newsletterTitle} onChange={(newsletterTitle) => save({ newsletterTitle })} />
+                ) : (
+                  cfg.newsletterTitle
+                )}
               </h4>
-              <p className="text-sm text-white/50 mb-4">
-                {cfg.newsletterDescription}
-              </p>
+              {section?.id ? (
+                <EditableText
+                  as="p"
+                  multiline
+                  className="text-sm text-white/50 mb-4"
+                  value={cfg.newsletterDescription}
+                  onChange={(newsletterDescription) => save({ newsletterDescription })}
+                />
+              ) : (
+                <p className="text-sm text-white/50 mb-4">{cfg.newsletterDescription}</p>
+              )}
               <div className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="email"
@@ -297,7 +415,14 @@ const Footer = ({ section }: { section?: CmsSection }) => {
                   onClick={handleContactClick}
                   className="w-full sm:w-auto shrink-0 px-4 py-3 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm font-medium hover:bg-neon-cyan/30 transition-colors"
                 >
-                  {cfg.newsletterButtonText}
+                  {section?.id ? (
+                    <EditableText
+                      value={cfg.newsletterButtonText}
+                      onChange={(newsletterButtonText) => save({ newsletterButtonText })}
+                    />
+                  ) : (
+                    cfg.newsletterButtonText
+                  )}
                 </button>
               </div>
             </div>
@@ -377,7 +502,11 @@ const Footer = ({ section }: { section?: CmsSection }) => {
           {/* Bottom bar */}
           <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-xs text-white/30 font-mono-custom">
-              {cfg.copyrightText}
+              {section?.id ? (
+                <EditableText value={cfg.copyrightText} onChange={(copyrightText) => save({ copyrightText })} />
+              ) : (
+                cfg.copyrightText
+              )}
             </p>
             <div className="flex flex-wrap justify-center md:justify-end gap-4 sm:gap-6">
               {cfg.bottomLinks.map((link) => (

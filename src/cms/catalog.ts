@@ -17,6 +17,13 @@ export const ADDABLE_SECTIONS: AddableSection[] = [
     content: { text: 'Scrivi qui il testo…' },
   },
   {
+    type: 'spacer',
+    label: 'Spazio',
+    hint: 'Separatore vuoto tra i blocchi',
+    layout: {},
+    content: { height: 120 },
+  },
+  {
     type: 'split',
     label: 'Foto e testo',
     hint: 'Immagine a fianco del contenuto',
@@ -33,6 +40,28 @@ export const ADDABLE_SECTIONS: AddableSection[] = [
       specs: [],
       ctaText: '',
       ctaHref: 'mailto:info@spaziogame.net',
+    },
+  },
+  {
+    type: 'split_list',
+    label: 'Elenco prodotti',
+    hint: 'Foto grande, poi testo e caratteristiche',
+    layout: { imageSide: 'left', imageRatio: 'portrait', imageFit: 'contain' },
+    content: {
+      title: 'Prodotti',
+      items: [
+        {
+          title: 'Prodotto',
+          body: 'Descrizione',
+          image: '/hero-sede.jpg',
+          imageAlt: 'Prodotto',
+          imageHref: '',
+          specsTitle: 'Caratteristiche tecniche',
+          specs: [{ label: 'Voce', value: 'Valore' }],
+          listTitle: 'Dimensioni',
+          list: [],
+        },
+      ],
     },
   },
   {
@@ -65,10 +94,12 @@ export const ADDABLE_SECTIONS: AddableSection[] = [
   {
     type: 'provider_groups',
     label: 'Giochi per marchio',
-    hint: 'Logo del provider e giochi in riga',
+    hint: 'I nostri giochi e tutti i giochi, a scorrimento laterale',
     layout: { columns: 2, imageFit: 'contain' },
     content: {
-      title: 'Giochi per marchio',
+      oursTitle: 'I nostri giochi',
+      allTitle: 'Tutti i giochi',
+      ours: [{ title: 'Master 5', image: '/master5-game.jpg', href: '' }],
       items: [
         {
           name: 'Octavian',
@@ -146,4 +177,5 @@ export const SECTION_LABELS: Record<SectionType, string> = {
   brands: 'Marchi',
   contact_banner: 'Banner contatto',
   provider_groups: 'Giochi per marchio',
+  spacer: 'Spazio',
 };

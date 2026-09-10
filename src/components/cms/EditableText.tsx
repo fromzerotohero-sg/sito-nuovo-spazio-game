@@ -38,7 +38,7 @@ export default function EditableText({
 
   const commit = () => {
     setActive(false);
-    const next = draft.trim() ? draft : value;
+    const next = draft.trim();
     setDraft(next);
     if (next !== value) onChange(next);
   };

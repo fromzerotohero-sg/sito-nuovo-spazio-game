@@ -13,7 +13,8 @@ export type SectionType =
   | 'cta'
   | 'brands'
   | 'contact_banner'
-  | 'provider_groups';
+  | 'provider_groups'
+  | 'spacer';
 
 export type SectionLayout = {
   imageSide?: 'left' | 'right';
@@ -55,6 +56,7 @@ export type SplitContent = {
   imageHref?: string;
   imageFit?: 'cover' | 'contain';
   badge?: string;
+  specsTitle?: string;
   specs?: SpecItem[];
   listTitle?: string;
   list?: string[];
@@ -67,6 +69,8 @@ export type SplitContent = {
 export type SplitListItem = SplitContent & {
   id?: string;
   subtitle?: string;
+  kind?: 'product' | 'spacer';
+  spacerHeight?: number;
 };
 
 export const PAGE_ORDER = [

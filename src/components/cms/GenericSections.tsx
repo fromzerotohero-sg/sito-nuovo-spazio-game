@@ -13,6 +13,91 @@ function asArray<T>(value: unknown): T[] {
   return Array.isArray(value) ? (value as T[]) : [];
 }
 
+function isSpacerItem(item: SplitListItem): boolean {
+  return item.kind === 'spacer';
+}
+
+const SPACER_PRESETS = [
+  { label: 'S', height: 64 },
+  { label: 'M', height: 120 },
+  { label: 'L', height: 200 },
+  { label: 'XL', height: 280 },
+] as const;
+
+function SpacerBlock({
+  height,
+  editing,
+  onHeight,
+  onRemove,
+}: {
+  height: number;
+  editing: boolean;
+  onHeight: (height: number) => void;
+  onRemove?: () => void;
+}) {
+  const h = Number.isFinite(height) && height > 0 ? height : 120;
+  return (
+    <div
+      className={`relative ${editing ? 'border-y border-dashed border-white/20 bg-white/[0.03]' : ''}`}
+      style={{ height: editing ? Math.max(h, 56) : h }}
+      aria-hidden={!editing}
+    >
+      {!editing && (
+        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex items-center gap-4">
+          <div className="h-px flex-1 bg-white/25" />
+          <div className="h-2 w-2 rotate-45 border border-neon-cyan/80 bg-neon-cyan/40" />
+          <div className="h-px flex-1 bg-white/25" />
+        </div>
+      )}
+      {editing && (
+        <div className="absolute inset-0 flex items-center justify-center gap-2">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-white/40">Spazio</span>
+          {SPACER_PRESETS.map((preset) => (
+            <button
+              key={preset.height}
+              type="button"
+              className={`px-2 py-0.5 rounded text-[10px] ${
+                h === preset.height ? 'bg-neon-cyan text-void-black' : 'text-white/50 hover:text-white'
+              }`}
+              onClick={() => onHeight(preset.height)}
+            >
+              {preset.label}
+            </button>
+          ))}
+          {onRemove ? (
+            <button type="button" className="text-[10px] text-red-300" onClick={onRemove}>
+              togli
+            </button>
+          ) : null}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProductDivider() {
+  return (
+    <div className="flex items-center gap-4 py-8 md:py-10" aria-hidden>
+      <div className="h-px flex-1 bg-white/25" />
+      <div className="h-2 w-2 rotate-45 border border-neon-cyan/80 bg-neon-cyan/40" />
+      <div className="h-px flex-1 bg-white/25" />
+    </div>
+  );
+}
+
+export function SpacerSection({ section }: { section: CmsSection }) {
+  const { patchContent } = useCms();
+  const editing = useIsEditing();
+  const height = typeof section.content.height === 'number' ? section.content.height : 120;
+  return (
+    <SpacerBlock
+      height={height}
+      editing={editing}
+      onHeight={(next) => patchContent(section.id, { height: next })}
+    />
+  );
+}
+
 export function IntroSection({ section }: { section: CmsSection }) {
   const { patchContent } = useCms();
   return (
@@ -34,10 +119,12 @@ function SplitBody({
   content,
   layout,
   onChange,
+  overlayTitle = true,
 }: {
   content: SplitContent;
   layout: CmsSection['layout'];
   onChange: (next: SplitContent) => void;
+  overlayTitle?: boolean;
 }) {
   const editing = useIsEditing();
   const imageFirst = layout.imageSide !== 'right';
@@ -60,8 +147,10 @@ function SplitBody({
         onChange={(image) => onChange({ ...content, image })}
         onHrefChange={(imageHref) => onChange({ ...content, imageHref })}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-void-black/70 via-transparent to-transparent pointer-events-none" />
-      {(content.eyebrow || content.title) && (
+      {overlayTitle && (
+        <div className="absolute inset-0 bg-gradient-to-t from-void-black/70 via-transparent to-transparent pointer-events-none" />
+      )}
+      {overlayTitle && (content.eyebrow || content.title) && (
         <div className="absolute bottom-4 left-4 right-4 pointer-events-none">
           {content.eyebrow && (
             <span className="text-neon-cyan text-xs tracking-[0.2em] uppercase">{content.eyebrow}</span>
@@ -107,36 +196,48 @@ function SplitBody({
           onChange={(body) => onChange({ ...content, body })}
         />
       )}
-      {content.specs && content.specs.length > 0 && (
+      {(editing || (content.specs && content.specs.length > 0)) && (
         <div className="space-y-3 mb-8">
-          {content.specs.map((spec, i) => (
+          {content.specsTitle ? (
+            <EditableText
+              as="h4"
+              className="text-white/80 text-xs tracking-[0.2em] uppercase mb-4"
+              value={content.specsTitle}
+              onChange={(specsTitle) => onChange({ ...content, specsTitle })}
+            />
+          ) : null}
+          {(content.specs ?? []).map((spec, i) => (
             <div key={`${spec.label}-${i}`} className="flex items-center gap-3">
               <div className="w-1.5 h-1.5 rounded-full bg-neon-cyan" />
               <EditableText
                 className="text-white text-sm"
                 value={spec.label}
                 onChange={(label) => {
-                  const specs = [...content.specs!];
+                  const specs = [...(content.specs ?? [])];
                   specs[i] = { ...specs[i], label };
                   onChange({ ...content, specs });
                 }}
               />
-              <span className="text-white/40">:</span>
-              <EditableText
-                className="text-white/60 text-sm"
-                value={spec.value}
-                onChange={(value) => {
-                  const specs = [...content.specs!];
-                  specs[i] = { ...specs[i], value };
-                  onChange({ ...content, specs });
-                }}
-              />
+              {(editing || spec.value) && (
+                <>
+                  <span className="text-white/40">:</span>
+                  <EditableText
+                    className="text-white/60 text-sm"
+                    value={spec.value}
+                    onChange={(value) => {
+                      const specs = [...(content.specs ?? [])];
+                      specs[i] = { ...specs[i], value };
+                      onChange({ ...content, specs });
+                    }}
+                  />
+                </>
+              )}
               {editing && (
                 <button
                   type="button"
                   className="text-[10px] text-white/30 hover:text-red-300"
                   onClick={() =>
-                    onChange({ ...content, specs: content.specs!.filter((_, idx) => idx !== i) })
+                    onChange({ ...content, specs: (content.specs ?? []).filter((_, idx) => idx !== i) })
                   }
                 >
                   togli
@@ -151,16 +252,17 @@ function SplitBody({
               onClick={() =>
                 onChange({
                   ...content,
+                  specsTitle: content.specsTitle ?? 'Caratteristiche tecniche',
                   specs: [...(content.specs ?? []), { label: 'Voce', value: 'Valore' }],
                 })
               }
             >
-              + Aggiungi riga
+              + Aggiungi caratteristica
             </button>
           )}
         </div>
       )}
-      {content.list && (
+      {(editing || content.list) && (
         <div className="mb-8">
           {content.listTitle != null && (
             <EditableText
@@ -171,7 +273,7 @@ function SplitBody({
             />
           )}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {content.list.map((item, i) => (
+            {(content.list ?? []).map((item, i) => (
               <div key={`${item}-${i}`} className="flex items-center gap-2 text-white/60 text-sm">
                 <Check size={14} className="text-neon-cyan shrink-0" />
                 <EditableText
@@ -332,54 +434,127 @@ export function SplitListSection({ section }: { section: CmsSection }) {
   const { patchContent } = useCms();
   const editing = useIsEditing();
   const items = asArray<SplitListItem>(section.content.items);
+  const title = asString(section.content.title);
+  const imageSide =
+    section.layout.imageSide === 'left' || section.layout.imageSide === 'right'
+      ? section.layout.imageSide
+      : undefined;
+  const overlayTitle = section.layout.imageRatio !== 'portrait';
+
+  const updateItems = (next: SplitListItem[]) => patchContent(section.id, { items: next });
+
+  const insertSpacerAfter = (index: number) => {
+    const next = [...items];
+    next.splice(index + 1, 0, { kind: 'spacer', spacerHeight: 120 });
+    updateItems(next);
+  };
+
+  let productIndex = 0;
 
   return (
-    <section className="px-4 sm:px-6 lg:px-12 py-16 border-t border-white/10">
-      <div className="max-w-6xl mx-auto space-y-16">
-        {items.map((item, index) => (
-          <div key={`${item.title}-${index}`} className="relative">
-            {editing && (
-              <button
-                type="button"
-                className="absolute -top-3 right-0 text-[10px] text-red-300"
-                onClick={() =>
-                  patchContent(section.id, { items: items.filter((_, i) => i !== index) })
-                }
-              >
-                Rimuovi
-              </button>
-            )}
-            <SplitBody
-              content={item}
-              layout={{
-                imageSide: index % 2 === 1 ? 'right' : 'left',
-                imageRatio: section.layout.imageRatio ?? 'video',
-                imageFit: section.layout.imageFit,
-              }}
-              onChange={(next) => {
-                const copy = [...items];
-                copy[index] = next;
-                patchContent(section.id, { items: copy });
-              }}
-            />
-          </div>
-        ))}
+    <section className="px-4 sm:px-6 lg:px-12 py-10 md:py-16">
+      <div className="max-w-6xl mx-auto">
+        {title || editing ? (
+          <EditableText
+            as="h3"
+            className="text-2xl font-display text-white uppercase tracking-tight text-center pt-12 pb-4"
+            value={title}
+            onChange={(next) => patchContent(section.id, { title: next })}
+          />
+        ) : null}
+        {items.map((item, index) => {
+          if (isSpacerItem(item)) {
+            return (
+              <div key={`spacer-${index}`}>
+                <SpacerBlock
+                  height={item.spacerHeight ?? 120}
+                  editing={editing}
+                  onHeight={(spacerHeight) => {
+                    const copy = [...items];
+                    copy[index] = { ...copy[index], kind: 'spacer', spacerHeight };
+                    updateItems(copy);
+                  }}
+                  onRemove={() => updateItems(items.filter((_, i) => i !== index))}
+                />
+                {editing && (
+                  <div className="flex justify-center py-2">
+                    <button
+                      type="button"
+                      className="text-[11px] uppercase tracking-wider text-white/40 hover:text-neon-cyan"
+                      onClick={() => insertSpacerAfter(index)}
+                    >
+                      + Spazio
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          }
+
+          const side = imageSide ?? (productIndex % 2 === 1 ? 'right' : 'left');
+          const isLastProduct = !items.slice(index + 1).some((entry) => !isSpacerItem(entry));
+          productIndex += 1;
+
+          return (
+            <div key={`${item.title}-${index}`}>
+              <article className="relative rounded-2xl border border-white/20 bg-white/[0.06] p-5 sm:p-8 md:p-10 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+                {editing && (
+                  <button
+                    type="button"
+                    className="absolute top-3 right-3 z-10 text-[10px] text-red-300"
+                    onClick={() => updateItems(items.filter((_, i) => i !== index))}
+                  >
+                    Rimuovi
+                  </button>
+                )}
+                <SplitBody
+                  content={item}
+                  overlayTitle={overlayTitle}
+                  layout={{
+                    imageSide: side,
+                    imageRatio: section.layout.imageRatio ?? 'video',
+                    imageFit: section.layout.imageFit,
+                  }}
+                  onChange={(next) => {
+                    const copy = [...items];
+                    copy[index] = next;
+                    updateItems(copy);
+                  }}
+                />
+              </article>
+              {!isLastProduct && !isSpacerItem(items[index + 1] ?? {}) ? <ProductDivider /> : null}
+              {editing && (
+                <div className="flex justify-center py-2">
+                  <button
+                    type="button"
+                    className="text-[11px] uppercase tracking-wider text-white/40 hover:text-neon-cyan"
+                    onClick={() => insertSpacerAfter(index)}
+                  >
+                    + Spazio
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })}
         {editing && (
           <button
             type="button"
-            className="text-sm text-neon-cyan"
+            className="mt-6 mb-10 text-sm text-neon-cyan"
             onClick={() =>
-              patchContent(section.id, {
-                items: [
-                  ...items,
-                  {
-                    title: 'Nuovo elemento',
-                    body: 'Descrizione',
-                    image: '/hero-sede.jpg',
-                    list: ['Voce'],
-                  },
-                ],
-              })
+              updateItems([
+                ...items,
+                {
+                  title: 'Nuovo elemento',
+                  body: 'Descrizione',
+                  image: '/hero-sede.jpg',
+                  imageHref: '',
+                  specsTitle: 'Caratteristiche tecniche',
+                  specs: [{ label: 'Voce', value: 'Valore' }],
+                  listTitle: 'Dimensioni',
+                  list: [],
+                },
+              ])
             }
           >
             + Aggiungi elemento
