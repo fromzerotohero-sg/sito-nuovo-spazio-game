@@ -33,13 +33,13 @@ function GameTagBadges({ tags }: { tags?: GameTagId[] }) {
   const active = GAME_TAGS.filter((tag) => tags?.includes(tag.id));
   if (active.length === 0) return null;
   return (
-    <div className="pointer-events-none absolute top-2 right-2 z-[25] flex flex-col items-end gap-1">
+    <div className="flex shrink-0 items-center gap-1.5">
       {active.map((tag) => (
         <img
           key={tag.id}
           src={tag.src}
           alt={tag.label}
-          className="h-12 w-12 md:h-[3.25rem] md:w-[3.25rem] object-contain drop-shadow-[0_6px_12px_rgba(0,0,0,0.65)]"
+          className="h-8 w-8 md:h-9 md:w-9 object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.55)]"
         />
       ))}
     </div>
@@ -142,14 +142,16 @@ function GameCardView({
             onHrefChange={(href) => onChange({ ...game, href })}
           />
         </div>
-        <GameTagBadges tags={game.tags} />
       </div>
       <div className="px-4 py-3 border-t border-white/10 bg-white/[0.03]">
-        <EditableText
-          className="text-white text-sm font-medium"
-          value={game.title}
-          onChange={(title) => onChange({ ...game, title })}
-        />
+        <div className="flex items-center justify-between gap-3">
+          <EditableText
+            className="min-w-0 flex-1 text-white text-sm font-medium"
+            value={game.title}
+            onChange={(title) => onChange({ ...game, title })}
+          />
+          <GameTagBadges tags={game.tags} />
+        </div>
         {editing && (
           <div className="mt-3 flex flex-wrap gap-2">
             {GAME_TAGS.map((tag) => {
