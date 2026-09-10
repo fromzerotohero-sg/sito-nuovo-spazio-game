@@ -6,11 +6,58 @@ import { useIsEditing } from '../../context/EditMode';
 import EditableImage from './EditableImage';
 import EditableText from './EditableText';
 
-type GameCard = { title: string; image: string; href?: string };
+type GameCard = { title: string; image: string; href?: string; tags?: GameTagId[] };
 type ProviderGroup = { name: string; logo: string; href?: string; games: GameCard[] };
+type GameTagId = 'bank' | 'bonus_persistent';
+
+const GAME_TAGS: { id: GameTagId; label: string; src: string }[] = [
+  { id: 'bank', label: 'Bank', src: '/bank.png' },
+  { id: 'bonus_persistent', label: 'Bonus Persistent', src: '/bonus_persistent.png' },
+];
 
 function asArray<T>(value: unknown): T[] {
   return Array.isArray(value) ? (value as T[]) : [];
+}
+
+const BLANK_GAME: GameCard = { title: 'Nuovo gioco', image: '/games-scheda.jpg', href: '', tags: [] };
+
+function toggleTag(game: GameCard, id: GameTagId): GameCard {
+  const tags = game.tags ?? [];
+  return {
+    ...game,
+    tags: tags.includes(id) ? tags.filter((tag) => tag !== id) : [...tags, id],
+  };
+}
+
+function GameTagBadges({ tags }: { tags?: GameTagId[] }) {
+  const active = GAME_TAGS.filter((tag) => tags?.includes(tag.id));
+  if (active.length === 0) return null;
+  return (
+    <div className="pointer-events-none absolute top-2 right-2 z-[25] flex flex-col items-end gap-1">
+      {active.map((tag) => (
+        <img
+          key={tag.id}
+          src={tag.src}
+          alt={tag.label}
+          className="h-12 w-12 md:h-[3.25rem] md:w-[3.25rem] object-contain drop-shadow-[0_6px_12px_rgba(0,0,0,0.65)]"
+        />
+      ))}
+    </div>
+  );
+}
+
+function insertAt<T>(list: T[], index: number, item: T): T[] {
+  const next = [...list];
+  next.splice(index, 0, item);
+  return next;
+}
+
+function moveItem<T>(list: T[], from: number, to: number): T[] {
+  if (to < 0 || to >= list.length) return list;
+  const next = [...list];
+  const [item] = next.splice(from, 1);
+  next.splice(to, 0, item);
+  return next;
 }
 
 function GameStrip({ children }: { children: React.ReactNode }) {
@@ -57,40 +104,124 @@ function GameCardView({
   game,
   onChange,
   onRemove,
+  onInsertBefore,
+  onInsertAfter,
+  onMoveLeft,
+  onMoveRight,
 }: {
   game: GameCard;
   onChange: (next: GameCard) => void;
   onRemove?: () => void;
+  onInsertBefore?: () => void;
+  onInsertAfter?: () => void;
+  onMoveLeft?: () => void;
+  onMoveRight?: () => void;
 }) {
   const editing = useIsEditing();
   return (
     <div
       data-game-card
-      className="snap-start shrink-0 w-[78vw] sm:w-[380px] md:w-[420px] rounded-lg border border-white/10 bg-void-dark overflow-hidden"
+      className="snap-start shrink-0 w-[78vw] sm:w-[380px] md:w-[440px] rounded-2xl border border-white/12 bg-void-dark overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.45)]"
     >
-      <div className="aspect-video bg-void-black flex items-center justify-center p-3">
-        <EditableImage
+      <div className="relative aspect-[4/3] overflow-hidden bg-void-black">
+        <img
           src={game.image || '/games-scheda.jpg'}
-          alt={game.title}
-          fit="contain"
-          className="max-h-full w-full object-contain"
-          href={game.href}
-          onChange={(image) => onChange({ ...game, image })}
-          onHrefChange={(href) => onChange({ ...game, href })}
+          alt=""
+          aria-hidden
+          className="absolute inset-0 h-full w-full scale-125 object-cover blur-2xl opacity-70"
         />
+        <div className="absolute inset-0 bg-gradient-to-b from-void-black/25 via-void-black/40 to-void-black/70" />
+        <div className="relative z-10 h-full w-full p-5">
+          <EditableImage
+            src={game.image || '/games-scheda.jpg'}
+            alt={game.title}
+            fit="contain"
+            className="h-full w-full object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.65)]"
+            href={game.href}
+            onChange={(image) => onChange({ ...game, image })}
+            onHrefChange={(href) => onChange({ ...game, href })}
+          />
+        </div>
+        <GameTagBadges tags={game.tags} />
       </div>
-      <div className="p-3">
+      <div className="px-4 py-3 border-t border-white/10 bg-white/[0.03]">
         <EditableText
           className="text-white text-sm font-medium"
           value={game.title}
           onChange={(title) => onChange({ ...game, title })}
         />
-        {editing && onRemove ? (
-          <button type="button" className="mt-2 text-[10px] text-white/30" onClick={onRemove}>
-            Rimuovi gioco
-          </button>
-        ) : null}
+        {editing && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {GAME_TAGS.map((tag) => {
+              const selected = (game.tags ?? []).includes(tag.id);
+              return (
+                <button
+                  key={tag.id}
+                  type="button"
+                  className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[10px] uppercase tracking-wider ${
+                    selected
+                      ? 'border-neon-cyan bg-neon-cyan/15 text-neon-cyan'
+                      : 'border-white/20 text-white/50 hover:border-white/40 hover:text-white/80'
+                  }`}
+                  onClick={() => onChange(toggleTag(game, tag.id))}
+                  aria-pressed={selected}
+                >
+                  <img src={tag.src} alt="" className="h-6 w-6 object-contain" />
+                  {tag.label}
+                </button>
+              );
+            })}
+          </div>
+        )}
+        {editing && (
+          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[10px] uppercase tracking-wider">
+            {onInsertBefore ? (
+              <button type="button" className="text-neon-cyan" onClick={onInsertBefore}>
+                + Prima
+              </button>
+            ) : null}
+            {onInsertAfter ? (
+              <button type="button" className="text-neon-cyan" onClick={onInsertAfter}>
+                + Dopo
+              </button>
+            ) : null}
+            {onMoveLeft ? (
+              <button type="button" className="text-white/50" onClick={onMoveLeft}>
+                ←
+              </button>
+            ) : null}
+            {onMoveRight ? (
+              <button type="button" className="text-white/50" onClick={onMoveRight}>
+                →
+              </button>
+            ) : null}
+            {onRemove ? (
+              <button type="button" className="text-white/30" onClick={onRemove}>
+                Rimuovi
+              </button>
+            ) : null}
+          </div>
+        )}
       </div>
+    </div>
+  );
+}
+
+function AddAtEnds({
+  onAddFirst,
+  onAddLast,
+}: {
+  onAddFirst: () => void;
+  onAddLast: () => void;
+}) {
+  return (
+    <div className="flex flex-wrap gap-4">
+      <button type="button" className="text-sm text-neon-cyan" onClick={onAddFirst}>
+        + Aggiungi all’inizio
+      </button>
+      <button type="button" className="text-sm text-neon-cyan" onClick={onAddLast}>
+        + Aggiungi in fondo
+      </button>
     </div>
   );
 }
@@ -135,6 +266,12 @@ export default function ProviderGroupsSection({ section }: { section: CmsSection
                       copy[gi] = next;
                       patch({ ours: copy });
                     }}
+                    onInsertBefore={() => patch({ ours: insertAt(ours, gi, { ...BLANK_GAME }) })}
+                    onInsertAfter={() => patch({ ours: insertAt(ours, gi + 1, { ...BLANK_GAME }) })}
+                    onMoveLeft={gi > 0 ? () => patch({ ours: moveItem(ours, gi, gi - 1) }) : undefined}
+                    onMoveRight={
+                      gi < ours.length - 1 ? () => patch({ ours: moveItem(ours, gi, gi + 1) }) : undefined
+                    }
                     onRemove={() => patch({ ours: ours.filter((_, i) => i !== gi) })}
                   />
                 ))}
@@ -143,17 +280,10 @@ export default function ProviderGroupsSection({ section }: { section: CmsSection
               <p className="text-center text-sm text-white/40">Nessuna scheda in questa sezione.</p>
             )}
             {editing && (
-              <button
-                type="button"
-                className="text-sm text-neon-cyan"
-                onClick={() =>
-                  patch({
-                    ours: [...ours, { title: 'Nuovo gioco', image: '/games-scheda.jpg', href: '' }],
-                  })
-                }
-              >
-                + Aggiungi ai nostri giochi
-              </button>
+              <AddAtEnds
+                onAddFirst={() => patch({ ours: [{ ...BLANK_GAME }, ...ours] })}
+                onAddLast={() => patch({ ours: [...ours, { ...BLANK_GAME }] })}
+              />
             )}
           </div>
         )}
@@ -218,48 +348,74 @@ export default function ProviderGroupsSection({ section }: { section: CmsSection
 
               {(provider.games ?? []).length > 0 ? (
                 <GameStrip>
-                  {(provider.games ?? []).map((game, gi) => (
-                    <GameCardView
-                      key={`${provider.name}-${game.title}-${gi}`}
-                      game={game}
-                      onChange={(next) => {
-                        const copy = [...items];
-                        const games = [...(copy[pi].games ?? [])];
-                        games[gi] = next;
-                        copy[pi] = { ...copy[pi], games };
-                        patch({ items: copy });
-                      }}
-                      onRemove={() => {
-                        const copy = [...items];
-                        copy[pi] = {
-                          ...copy[pi],
-                          games: (copy[pi].games ?? []).filter((_, i) => i !== gi),
-                        };
-                        patch({ items: copy });
-                      }}
-                    />
-                  ))}
+                  {(provider.games ?? []).map((game, gi) => {
+                    const games = provider.games ?? [];
+                    return (
+                      <GameCardView
+                        key={`${provider.name}-${game.title}-${gi}`}
+                        game={game}
+                        onChange={(next) => {
+                          const copy = [...items];
+                          const nextGames = [...(copy[pi].games ?? [])];
+                          nextGames[gi] = next;
+                          copy[pi] = { ...copy[pi], games: nextGames };
+                          patch({ items: copy });
+                        }}
+                        onInsertBefore={() => {
+                          const copy = [...items];
+                          copy[pi] = { ...copy[pi], games: insertAt(games, gi, { ...BLANK_GAME }) };
+                          patch({ items: copy });
+                        }}
+                        onInsertAfter={() => {
+                          const copy = [...items];
+                          copy[pi] = { ...copy[pi], games: insertAt(games, gi + 1, { ...BLANK_GAME }) };
+                          patch({ items: copy });
+                        }}
+                        onMoveLeft={
+                          gi > 0
+                            ? () => {
+                                const copy = [...items];
+                                copy[pi] = { ...copy[pi], games: moveItem(games, gi, gi - 1) };
+                                patch({ items: copy });
+                              }
+                            : undefined
+                        }
+                        onMoveRight={
+                          gi < games.length - 1
+                            ? () => {
+                                const copy = [...items];
+                                copy[pi] = { ...copy[pi], games: moveItem(games, gi, gi + 1) };
+                                patch({ items: copy });
+                              }
+                            : undefined
+                        }
+                        onRemove={() => {
+                          const copy = [...items];
+                          copy[pi] = {
+                            ...copy[pi],
+                            games: games.filter((_, i) => i !== gi),
+                          };
+                          patch({ items: copy });
+                        }}
+                      />
+                    );
+                  })}
                 </GameStrip>
               ) : null}
 
               {editing && (
-                <button
-                  type="button"
-                  className="text-sm text-neon-cyan"
-                  onClick={() => {
+                <AddAtEnds
+                  onAddFirst={() => {
                     const copy = [...items];
-                    copy[pi] = {
-                      ...copy[pi],
-                      games: [
-                        ...(copy[pi].games ?? []),
-                        { title: 'Nuovo gioco', image: '/games-scheda.jpg', href: '' },
-                      ],
-                    };
+                    copy[pi] = { ...copy[pi], games: [{ ...BLANK_GAME }, ...(copy[pi].games ?? [])] };
                     patch({ items: copy });
                   }}
-                >
-                  + Aggiungi gioco in questa riga
-                </button>
+                  onAddLast={() => {
+                    const copy = [...items];
+                    copy[pi] = { ...copy[pi], games: [...(copy[pi].games ?? []), { ...BLANK_GAME }] };
+                    patch({ items: copy });
+                  }}
+                />
               )}
             </div>
           ))}

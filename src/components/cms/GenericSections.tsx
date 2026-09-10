@@ -42,13 +42,6 @@ function SpacerBlock({
       style={{ height: editing ? Math.max(h, 56) : h }}
       aria-hidden={!editing}
     >
-      {!editing && (
-        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex items-center gap-4">
-          <div className="h-px flex-1 bg-white/25" />
-          <div className="h-2 w-2 rotate-45 border border-neon-cyan/80 bg-neon-cyan/40" />
-          <div className="h-px flex-1 bg-white/25" />
-        </div>
-      )}
       {editing && (
         <div className="absolute inset-0 flex items-center justify-center gap-2">
           <span className="text-[10px] uppercase tracking-[0.2em] text-white/40">Spazio</span>
@@ -71,16 +64,6 @@ function SpacerBlock({
           ) : null}
         </div>
       )}
-    </div>
-  );
-}
-
-function ProductDivider() {
-  return (
-    <div className="flex items-center gap-4 py-8 md:py-10" aria-hidden>
-      <div className="h-px flex-1 bg-white/25" />
-      <div className="h-2 w-2 rotate-45 border border-neon-cyan/80 bg-neon-cyan/40" />
-      <div className="h-px flex-1 bg-white/25" />
     </div>
   );
 }
@@ -439,7 +422,6 @@ export function SplitListSection({ section }: { section: CmsSection }) {
     section.layout.imageSide === 'left' || section.layout.imageSide === 'right'
       ? section.layout.imageSide
       : undefined;
-  const overlayTitle = section.layout.imageRatio !== 'portrait';
 
   const updateItems = (next: SplitListItem[]) => patchContent(section.id, { items: next });
 
@@ -492,11 +474,10 @@ export function SplitListSection({ section }: { section: CmsSection }) {
           }
 
           const side = imageSide ?? (productIndex % 2 === 1 ? 'right' : 'left');
-          const isLastProduct = !items.slice(index + 1).some((entry) => !isSpacerItem(entry));
           productIndex += 1;
 
           return (
-            <div key={`${item.title}-${index}`}>
+            <div key={`${item.title}-${index}`} className="mb-8 md:mb-10">
               <article className="relative rounded-2xl border border-white/20 bg-white/[0.06] p-5 sm:p-8 md:p-10 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
                 {editing && (
                   <button
@@ -509,7 +490,7 @@ export function SplitListSection({ section }: { section: CmsSection }) {
                 )}
                 <SplitBody
                   content={item}
-                  overlayTitle={overlayTitle}
+                  overlayTitle={false}
                   layout={{
                     imageSide: side,
                     imageRatio: section.layout.imageRatio ?? 'video',
@@ -522,7 +503,6 @@ export function SplitListSection({ section }: { section: CmsSection }) {
                   }}
                 />
               </article>
-              {!isLastProduct && !isSpacerItem(items[index + 1] ?? {}) ? <ProductDivider /> : null}
               {editing && (
                 <div className="flex justify-center py-2">
                   <button
