@@ -20,9 +20,7 @@ export default function ProviderGroupsSection({ section }: { section: CmsSection
   const colClass =
     cols === 3
       ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
-      : cols === 4
-        ? 'grid-cols-2 lg:grid-cols-4'
-        : 'grid-cols-1 sm:grid-cols-2';
+      : 'grid-cols-1 sm:grid-cols-2';
 
   function updateItems(next: ProviderGroup[]) {
     patchContent(section.id, { items: next });
