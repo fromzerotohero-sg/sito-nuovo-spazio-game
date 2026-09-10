@@ -300,13 +300,13 @@ export default function ProviderGroupsSection({ section }: { section: CmsSection
 
           {items.map((provider, pi) => (
             <div key={`${provider.name}-${pi}`} className="space-y-8">
-              <div className="flex flex-wrap items-end gap-4">
-                <div className="h-40 w-72 max-w-full bg-white/5 rounded-lg border border-white/10 p-3">
+              <div className="flex flex-col items-center text-center">
+                <div className="mx-auto flex h-40 w-72 max-w-full items-center justify-center rounded-lg border border-white/10 bg-white/5 p-3">
                   <EditableImage
                     src={provider.logo || '/games-scheda.jpg'}
                     alt={provider.name}
                     fit="contain"
-                    className="h-full w-full object-contain"
+                    className="mx-auto h-full w-full object-contain object-center"
                     href={provider.href}
                     onChange={(logo) => {
                       const copy = [...items];
@@ -320,31 +320,29 @@ export default function ProviderGroupsSection({ section }: { section: CmsSection
                     }}
                   />
                 </div>
-                <div className="min-w-0 flex-1">
-                  <EditableText
-                    as="h4"
-                    className="text-white font-display text-xl uppercase tracking-tight"
-                    value={provider.name}
-                    onChange={(name) => {
-                      const copy = [...items];
-                      copy[pi] = { ...copy[pi], name };
-                      patch({ items: copy });
-                    }}
-                  />
-                  {editing && (
-                    <p className="text-[11px] text-white/35 mt-1">
+                {editing && (
+                  <div className="mt-3 flex flex-col items-center gap-2">
+                    <EditableText
+                      as="h4"
+                      className="text-white/70 font-display text-sm uppercase tracking-tight"
+                      value={provider.name}
+                      onChange={(name) => {
+                        const copy = [...items];
+                        copy[pi] = { ...copy[pi], name };
+                        patch({ items: copy });
+                      }}
+                    />
+                    <p className="text-[11px] text-white/35">
                       Carica il logo del marchio e incolla il sito. Il logo diventa cliccabile.
                     </p>
-                  )}
-                </div>
-                {editing && (
-                  <button
-                    type="button"
-                    className="text-[11px] text-red-300"
-                    onClick={() => patch({ items: items.filter((_, i) => i !== pi) })}
-                  >
-                    Rimuovi marchio
-                  </button>
+                    <button
+                      type="button"
+                      className="text-[11px] text-red-300"
+                      onClick={() => patch({ items: items.filter((_, i) => i !== pi) })}
+                    >
+                      Rimuovi marchio
+                    </button>
+                  </div>
                 )}
               </div>
 

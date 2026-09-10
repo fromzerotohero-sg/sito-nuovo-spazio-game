@@ -405,6 +405,7 @@ export function SplitSection({ section }: { section: CmsSection }) {
       <div className="max-w-6xl mx-auto">
         <SplitBody
           content={content}
+          overlayTitle={false}
           layout={section.layout}
           onChange={(next) => patchContent(section.id, next)}
         />
